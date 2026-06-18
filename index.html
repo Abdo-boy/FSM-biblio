@@ -153,4 +153,714 @@ nav ul li a:hover{color:#e2e8f0;background:rgba(255,255,255,0.06)}
 .mod-icon{
   width:34px;height:34px;border-radius:8px;
   background:rgba(76,201,240,0.12);border:1px solid var(--b2);
-  display:flex;align-items:center;justify-
+  display:flex;align-items:center;justify-content:center;font-size:15px
+}
+.mod-name{font-size:14px;font-weight:600}
+.mod-code{font-size:11px;color:var(--muted);margin-top:1px}
+.mod-actions{display:flex;gap:5px}
+.ico-btn{
+  background:rgba(255,255,255,0.05);border:1px solid var(--b);color:var(--muted);
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:.15s;font-size:13px
+}
+.ico-btn:hover{background:rgba(76,201,240,0.1);color:var(--a);border-color:var(--b2)}
+.ico-btn.del:hover{background:rgba(239,68,68,0.1);color:#f87171;border-color:rgba(239,68,68,0.3)}
+
+/* ===== FILES ===== */
+.files-area{padding:10px 18px 14px}
+.file-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04)
+}
+.file-row:last-child{border-bottom:none}
+.fi{display:flex;align-items:center;gap:8px}
+.ftype{font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;letter-spacing:.5px}
+.fc{background:rgba(76,201,240,0.15);color:#4cc9f0}
+.ft{background:rgba(167,139,250,0.15);color:#a78bfa}
+.fe{background:rgba(251,191,36,0.15);color:#fbbf24}
+.fname{font-size:12px;color:#c9d4e3}
+.file-btns{display:flex;gap:5px}
+.dl{
+  background:rgba(76,201,240,0.1);color:var(--a);border:1px solid var(--b2);
+  padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  text-decoration:none;transition:.15s;cursor:pointer;white-space:nowrap
+}
+.dl:hover{background:rgba(76,201,240,0.2)}
+.del-f{
+  background:rgba(239,68,68,0.08);color:#f87171;
+  border:1px solid rgba(239,68,68,0.2);padding:5px 8px;
+  border-radius:6px;font-size:11px;cursor:pointer;transition:.15s
+}
+.del-f:hover{background:rgba(239,68,68,0.18)}
+.add-file-row{padding:8px 18px 10px;border-top:1px solid var(--b)}
+.upload-zone{
+  border:1px dashed var(--b2);border-radius:8px;padding:10px 14px;
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  transition:.2s;background:rgba(76,201,240,0.03)
+}
+.upload-zone:hover{background:rgba(76,201,240,0.07)}
+.uz-text{font-size:12px;color:var(--muted)}
+.uz-text strong{color:var(--a)}
+
+/* ===== EMPTY STATE ===== */
+.empty-sem{
+  text-align:center;padding:40px;color:var(--muted);
+  background:var(--card);border:1px dashed var(--b2);border-radius:var(--r)
+}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.75);z-index:500;
+  align-items:center;justify-content:center;padding:20px
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#131c2e;border:1px solid var(--b2);
+  border-radius:16px;padding:28px;width:100%;max-width:440px
+}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:20px;color:var(--a)}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.form-group input,
+.form-group select{
+  width:100%;background:#0a0f1e;border:1px solid var(--b2);
+  color:#e2e8f0;padding:10px 12px;border-radius:8px;font-size:13px;outline:none
+}
+.form-group input:focus,
+.form-group select:focus{border-color:var(--a)}
+.form-group select option{background:#131c2e}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.mbtn-p{
+  background:var(--a);color:#0a0f1e;border:none;padding:11px 22px;
+  border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;flex:1
+}
+.mbtn-p:hover{background:#38b6d9}
+.mbtn-c{
+  background:transparent;color:var(--muted);border:1px solid var(--b);
+  padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;transition:.2s
+}
+.mbtn-c:hover{color:#e2e8f0;border-color:var(--b2)}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:#1a2236;border:1px solid var(--b2);color:var(--a);
+  padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;
+  opacity:0;transform:translateY(10px);transition:.3s;z-index:1000;pointer-events:none
+}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:700px){
+  nav ul li:not(:last-child):not(:first-child){display:none}
+  .hero h1{font-size:26px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .sem-header{flex-direction:column;align-items:flex-start;gap:12px}
+  .mods-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <div class="logo">
+    <div class="logo-i">S</div>
+    ScienceHub
+  </div>
+  <ul>
+    <li><a href="#">Accueil</a></li>
+    <li class="dd">
+      <a href="#">Semestres ▾</a>
+      <div class="dd-menu" id="nav-sem-menu"></div>
+    </li>
+    <li><a href="#">Examens</a></li>
+    <li><a href="#">Contact</a></li>
+    <li><a href="#" class="nav-cta">Espace étudiant</a></li>
+  </ul>
+</nav>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hbadge">🎓 Filières universitaires marocaines</div>
+  <h1>Toutes vos ressources<br><span>scientifiques</span> en un clic</h1>
+  <p>Cours, TD, examens — organisés par filière et par semestre. Ajoutez vos propres documents facilement.</p>
+  <div class="hbtns">
+    <button class="bp" onclick="document.getElementById('content').scrollIntoView({behavior:'smooth'})">
+      Parcourir les cours
+    </button>
+    <button class="bo" onclick="openAddMod()">+ Ajouter un module</button>
+  </div>
+</div>
+
+<!-- ===== STATS ===== -->
+<div class="stats">
+  <div class="sc"><div class="sn" id="s-files">0</div><div class="sl">Fichiers</div></div>
+  <div class="sc"><div class="sn" id="s-mods">0</div><div class="sl">Modules</div></div>
+  <div class="sc"><div class="sn">6</div><div class="sl">Semestres</div></div>
+  <div class="sc"><div class="sn">100%</div><div class="sl">Gratuit</div></div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main" id="content">
+  <div class="fil-label">Choisir une filière</div>
+  <div class="fil-tabs" id="fil-tabs"></div>
+  <div class="sem-tabs" id="sem-tabs"></div>
+  <div id="sem-panels"></div>
+</div>
+
+<!-- ===== MODAL : NOUVEAU MODULE ===== -->
+<div class="modal-overlay" id="modal-mod">
+  <div class="modal">
+    <h3>+ Nouveau module</h3>
+    <div class="form-group">
+      <label>Nom du module</label>
+      <input type="text" id="mod-name-in" placeholder="ex : Analyse 3">
+    </div>
+    <div class="form-group">
+      <label>Code</label>
+      <input type="text" id="mod-code-in" placeholder="ex : MAT301">
+    </div>
+    <div class="form-group">
+      <label>Icône / symbole (1-2 caractères)</label>
+      <input type="text" id="mod-icon-in" placeholder="ex : ∫ ou A" maxlength="2">
+    </div>
+    <div class="form-group">
+      <label>Semestre cible</label>
+      <select id="mod-sem-in"></select>
+    </div>
+    <div class="modal-btns">
+      <button class="mbtn-p" onclick="saveModule()">Ajouter</button>
+      <button class="mbtn-c" onclick="closeModal('modal-mod')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL : AJOUTER FICHIER ===== -->
+<div class="modal-overlay" id="modal-file">
+  <div class="modal">
+    <h3>📎 Ajouter un document</h3>
+    <div class="form-group">
+      <label>Titre du document</label>
+      <input type="text" id="file-name-in" placeholder="ex : Cours Analyse 3 — Ch.1">
+    </div>
+    <div class="form-group">
+      <label>Type de document</label>
+      <select id="file-type-in">
+        <option value="cours">📖 Cours</option>
+        <option value="td">📝 TD / Série d'exercices</option>
+        <option value="exam">🎓 Examen / Contrôle</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Lien URL (Google Drive, OneDrive, direct...)</label>
+      <input type="text" id="file-url-in" placeholder="https://drive.google.com/...">
+    </div>
+    <div class="modal-btns">
+      <button class="mbtn-p" onclick="saveFile()">Ajouter</button>
+      <button class="mbtn-c" onclick="closeModal('modal-file')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== DONNÉES ==========
+const FILIERES = {
+  "SMC": {
+    label:"SMC", full:"Sciences Mathématiques et Chimie", color:"#4cc9f0",
+    sems:{
+      1:[
+        {id:"smc-s1-m1",name:"Analyse 1",code:"MAT101",icon:"∫",files:[
+          {id:"f1",name:"Cours Analyse 1 complet",type:"cours",url:"#"},
+          {id:"f2",name:"TD Séries numériques",type:"td",url:"#"},
+          {id:"f3",name:"Examen 2023 + corrigé",type:"exam",url:"#"}
+        ]},
+        {id:"smc-s1-m2",name:"Algèbre 1",code:"MAT102",icon:"∑",files:[
+          {id:"f4",name:"Cours Algèbre linéaire",type:"cours",url:"#"},
+          {id:"f5",name:"TD Matrices et systèmes",type:"td",url:"#"}
+        ]},
+        {id:"smc-s1-m3",name:"Chimie Générale",code:"CHI101",icon:"⚗",files:[
+          {id:"f6",name:"Cours Chimie générale",type:"cours",url:"#"}
+        ]}
+      ],
+      2:[
+        {id:"smc-s2-m1",name:"Analyse 2",code:"MAT201",icon:"∂",files:[
+          {id:"f7",name:"Intégrales et suites — Cours",type:"cours",url:"#"}
+        ]},
+        {id:"smc-s2-m2",name:"Algèbre 2",code:"MAT202",icon:"λ",files:[]},
+        {id:"smc-s2-m3",name:"Chimie Organique 1",code:"CHI201",icon:"C",files:[]}
+      ],
+      3:[
+        {id:"smc-s3-m1",name:"Analyse 3",code:"MAT301",icon:"∮",files:[]},
+        {id:"smc-s3-m2",name:"Probabilités & Statistiques",code:"MAT302",icon:"P",files:[]}
+      ],
+      4:[
+        {id:"smc-s4-m1",name:"Analyse 4",code:"MAT401",icon:"∇",files:[]},
+        {id:"smc-s4-m2",name:"Topologie",code:"MAT402",icon:"T",files:[]}
+      ],
+      5:[
+        {id:"smc-s5-m1",name:"Mécanique Analytique",code:"PHY501",icon:"F",files:[]},
+        {id:"smc-s5-m2",name:"Chimie des Solutions",code:"CHI501",icon:"S",files:[]}
+      ],
+      6:[
+        {id:"smc-s6-m1",name:"Projet de Fin d'Études",code:"PFE601",icon:"★",files:[]}
+      ]
+    }
+  },
+  "SMP": {
+    label:"SMP", full:"Sciences Mathématiques et Physique", color:"#a78bfa",
+    sems:{
+      1:[
+        {id:"smp-s1-m1",name:"Analyse 1",code:"MAT101",icon:"∫",files:[
+          {id:"g1",name:"Cours Analyse 1",type:"cours",url:"#"},
+          {id:"g2",name:"TD Fonctions",type:"td",url:"#"}
+        ]},
+        {id:"smp-s1-m2",name:"Mécanique 1",code:"PHY101",icon:"F",files:[
+          {id:"g3",name:"Cours Mécanique du point",type:"cours",url:"#"}
+        ]},
+        {id:"smp-s1-m3",name:"Électricité 1",code:"PHY102",icon:"⚡",files:[]}
+      ],
+      2:[
+        {id:"smp-s2-m1",name:"Optique Géométrique",code:"PHY201",icon:"◎",files:[]},
+        {id:"smp-s2-m2",name:"Analyse 2",code:"MAT201",icon:"∂",files:[]},
+        {id:"smp-s2-m3",name:"Algèbre 2",code:"MAT202",icon:"λ",files:[]}
+      ],
+      3:[
+        {id:"smp-s3-m1",name:"Thermodynamique",code:"PHY301",icon:"🌡",files:[]},
+        {id:"smp-s3-m2",name:"Analyse 3",code:"MAT301",icon:"∮",files:[]}
+      ],
+      4:[
+        {id:"smp-s4-m1",name:"Électromagnétisme",code:"PHY401",icon:"B",files:[]},
+        {id:"smp-s4-m2",name:"Mécanique des Fluides",code:"PHY402",icon:"~",files:[]}
+      ],
+      5:[
+        {id:"smp-s5-m1",name:"Mécanique Quantique",code:"PHY501",icon:"ψ",files:[]},
+        {id:"smp-s5-m2",name:"Physique Statistique",code:"PHY502",icon:"Ω",files:[]}
+      ],
+      6:[
+        {id:"smp-s6-m1",name:"Projet de Fin d'Études",code:"PFE601",icon:"★",files:[]}
+      ]
+    }
+  },
+  "SVT": {
+    label:"SVT", full:"Sciences de la Vie et de la Terre", color:"#34d399",
+    sems:{
+      1:[
+        {id:"svt-s1-m1",name:"Biologie Cellulaire",code:"BIO101",icon:"🔬",files:[
+          {id:"h1",name:"Cours Cellule eucaryote",type:"cours",url:"#"}
+        ]},
+        {id:"svt-s1-m2",name:"Géologie 1",code:"GEO101",icon:"🌍",files:[]},
+        {id:"svt-s1-m3",name:"Chimie Organique",code:"CHI101",icon:"C",files:[]}
+      ],
+      2:[
+        {id:"svt-s2-m1",name:"Biochimie 1",code:"BIO201",icon:"🧬",files:[]},
+        {id:"svt-s2-m2",name:"Botanique",code:"BIO202",icon:"🌿",files:[]},
+        {id:"svt-s2-m3",name:"Géologie 2",code:"GEO201",icon:"⛰",files:[]}
+      ],
+      3:[
+        {id:"svt-s3-m1",name:"Génétique Générale",code:"BIO301",icon:"G",files:[]},
+        {id:"svt-s3-m2",name:"Écologie Générale",code:"BIO302",icon:"E",files:[]}
+      ],
+      4:[
+        {id:"svt-s4-m1",name:"Microbiologie",code:"BIO401",icon:"M",files:[]},
+        {id:"svt-s4-m2",name:"Physiologie Végétale",code:"BIO402",icon:"V",files:[]}
+      ],
+      5:[
+        {id:"svt-s5-m1",name:"Physiologie Animale",code:"BIO501",icon:"A",files:[]},
+        {id:"svt-s5-m2",name:"Biologie Moléculaire",code:"BIO502",icon:"🧪",files:[]}
+      ],
+      6:[
+        {id:"svt-s6-m1",name:"Projet de Fin d'Études",code:"PFE601",icon:"★",files:[]}
+      ]
+    }
+  },
+  "MIPC": {
+    label:"MIPC", full:"Maths, Informatique, Physique & Chimie", color:"#fb923c",
+    sems:{
+      1:[
+        {id:"mipc-s1-m1",name:"Algorithmique",code:"INF101",icon:"⌨",files:[
+          {id:"i1",name:"Cours Algo & Programmation",type:"cours",url:"#"},
+          {id:"i2",name:"TD Algorithmique",type:"td",url:"#"}
+        ]},
+        {id:"mipc-s1-m2",name:"Analyse 1",code:"MAT101",icon:"∫",files:[]},
+        {id:"mipc-s1-m3",name:"Physique 1",code:"PHY101",icon:"φ",files:[]}
+      ],
+      2:[
+        {id:"mipc-s2-m1",name:"Programmation C",code:"INF201",icon:"C",files:[]},
+        {id:"mipc-s2-m2",name:"Algèbre",code:"MAT201",icon:"∑",files:[]},
+        {id:"mipc-s2-m3",name:"Chimie 1",code:"CHI201",icon:"⚗",files:[]}
+      ],
+      3:[
+        {id:"mipc-s3-m1",name:"Structures de données",code:"INF301",icon:"S",files:[]},
+        {id:"mipc-s3-m2",name:"Analyse Numérique",code:"MAT301",icon:"N",files:[]}
+      ],
+      4:[
+        {id:"mipc-s4-m1",name:"Bases de Données",code:"INF401",icon:"🗄",files:[]},
+        {id:"mipc-s4-m2",name:"Systèmes d'Exploitation",code:"INF402",icon:"💻",files:[]}
+      ],
+      5:[
+        {id:"mipc-s5-m1",name:"Réseaux Informatiques",code:"INF501",icon:"🌐",files:[]},
+        {id:"mipc-s5-m2",name:"Génie Logiciel",code:"INF502",icon:"⚙",files:[]}
+      ],
+      6:[
+        {id:"mipc-s6-m1",name:"Projet de Fin d'Études",code:"PFE601",icon:"★",files:[]}
+      ]
+    }
+  },
+  "ECO": {
+    label:"Économie", full:"Sciences Économiques et Gestion", color:"#fbbf24",
+    sems:{
+      1:[
+        {id:"eco-s1-m1",name:"Microéconomie 1",code:"ECO101",icon:"📊",files:[
+          {id:"j1",name:"Cours Microéconomie",type:"cours",url:"#"}
+        ]},
+        {id:"eco-s1-m2",name:"Comptabilité Générale",code:"GES101",icon:"📒",files:[]},
+        {id:"eco-s1-m3",name:"Mathématiques Éco",code:"MAT101",icon:"∑",files:[]}
+      ],
+      2:[
+        {id:"eco-s2-m1",name:"Macroéconomie 1",code:"ECO201",icon:"📈",files:[]},
+        {id:"eco-s2-m2",name:"Statistiques",code:"MAT201",icon:"S",files:[]},
+        {id:"eco-s2-m3",name:"Droit Commercial",code:"JUR201",icon:"⚖",files:[]}
+      ],
+      3:[
+        {id:"eco-s3-m1",name:"Finance d'Entreprise",code:"FIN301",icon:"💼",files:[]},
+        {id:"eco-s3-m2",name:"Économie Internationale",code:"ECO301",icon:"🌐",files:[]}
+      ],
+      4:[
+        {id:"eco-s4-m1",name:"Marketing",code:"MKT401",icon:"M",files:[]},
+        {id:"eco-s4-m2",name:"Gestion des Ressources Humaines",code:"GES401",icon:"👥",files:[]}
+      ],
+      5:[
+        {id:"eco-s5-m1",name:"Économétrie",code:"ECO501",icon:"E",files:[]},
+        {id:"eco-s5-m2",name:"Audit & Contrôle de Gestion",code:"GES501",icon:"🔍",files:[]}
+      ],
+      6:[
+        {id:"eco-s6-m1",name:"Mémoire de Fin d'Études",code:"MFE601",icon:"★",files:[]}
+      ]
+    }
+  },
+  "DROIT": {
+    label:"Droit", full:"Sciences Juridiques", color:"#f472b6",
+    sems:{
+      1:[
+        {id:"dr-s1-m1",name:"Droit Constitutionnel",code:"JUR101",icon:"⚖",files:[
+          {id:"k1",name:"Cours Droit Constitutionnel",type:"cours",url:"#"}
+        ]},
+        {id:"dr-s1-m2",name:"Introduction au Droit",code:"JUR102",icon:"📜",files:[]},
+        {id:"dr-s1-m3",name:"Histoire du Droit",code:"JUR103",icon:"📖",files:[]}
+      ],
+      2:[
+        {id:"dr-s2-m1",name:"Droit Civil 1",code:"JUR201",icon:"C",files:[]},
+        {id:"dr-s2-m2",name:"Droit des Obligations",code:"JUR202",icon:"D",files:[]}
+      ],
+      3:[
+        {id:"dr-s3-m1",name:"Droit Administratif",code:"JUR301",icon:"A",files:[]},
+        {id:"dr-s3-m2",name:"Droit Pénal Général",code:"JUR302",icon:"P",files:[]}
+      ],
+      4:[
+        {id:"dr-s4-m1",name:"Droit Commercial",code:"JUR401",icon:"💼",files:[]},
+        {id:"dr-s4-m2",name:"Procédure Civile",code:"JUR402",icon:"⚖",files:[]}
+      ],
+      5:[
+        {id:"dr-s5-m1",name:"Droit International Public",code:"JUR501",icon:"🌐",files:[]},
+        {id:"dr-s5-m2",name:"Droit du Travail",code:"JUR502",icon:"👷",files:[]}
+      ],
+      6:[
+        {id:"dr-s6-m1",name:"Mémoire de Fin d'Études",code:"MFE601",icon:"★",files:[]}
+      ]
+    }
+  }
+};
+
+const SEM_LABELS = {
+  1:"Semestre 1",2:"Semestre 2",3:"Semestre 3",
+  4:"Semestre 4",5:"Semestre 5",6:"Semestre 6"
+};
+const SEM_SUBS = {
+  1:"Fondements et introduction",
+  2:"Approfondissement",
+  3:"Spécialisation niveau 1",
+  4:"Spécialisation niveau 2",
+  5:"Approfondissement avancé",
+  6:"Fin de cycle / PFE"
+};
+
+// ========== STATE ==========
+let currentFil = "SMC";
+let currentSem = 1;
+let pendingModSem = null;
+let pendingFileMod = null;
+
+// ========== UTILS ==========
+function uid() { return 'x' + Math.random().toString(36).slice(2, 9); }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ========== NAV ==========
+function buildNavSem() {
+  const m = document.getElementById('nav-sem-menu');
+  m.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.textContent = SEM_LABELS[i];
+    a.onclick = (e) => { e.preventDefault(); switchSem(i); };
+    m.appendChild(a);
+  }
+}
+
+// ========== FILIERE TABS ==========
+function buildFilTabs() {
+  const c = document.getElementById('fil-tabs');
+  c.innerHTML = '';
+  Object.entries(FILIERES).forEach(([k, f]) => {
+    const b = document.createElement('button');
+    b.className = 'ftab' + (k === currentFil ? ' active' : '');
+    b.innerHTML = `<span style="font-weight:700;color:${f.color}">${f.label}</span>
+      &nbsp;<span style="font-size:11px;color:#8b9ab0">— ${f.full}</span>`;
+    b.onclick = () => switchFil(k);
+    c.appendChild(b);
+  });
+}
+
+// ========== SEMESTER TABS ==========
+function buildSemTabs() {
+  const c = document.getElementById('sem-tabs');
+  c.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const b = document.createElement('button');
+    b.className = 'stab' + (i === currentSem ? ' active' : '');
+    b.textContent = `S${i}`;
+    b.onclick = () => switchSem(i);
+    c.appendChild(b);
+  }
+}
+
+// ========== PANELS ==========
+function buildPanels() {
+  const c = document.getElementById('sem-panels');
+  c.innerHTML = '';
+  for (let s = 1; s <= 6; s++) {
+    const div = document.createElement('div');
+    div.className = 'sem-content' + (s === currentSem ? ' active' : '');
+    div.id = `panel-s${s}`;
+    div.innerHTML = renderSem(s);
+    c.appendChild(div);
+  }
+}
+
+function renderSem(s) {
+  const fil = FILIERES[currentFil];
+  const mods = fil.sems[s] || [];
+  let html = `
+    <div class="sem-header">
+      <div class="sem-left">
+        <div class="sem-badge">S${s}</div>
+        <div>
+          <div class="sem-title">${SEM_LABELS[s]} — ${currentFil}</div>
+          <div class="sem-sub">${SEM_SUBS[s]}</div>
+        </div>
+      </div>
+      <button class="add-mod-btn" onclick="openAddMod(${s})">+ Ajouter un module</button>
+    </div>`;
+
+  if (mods.length === 0) {
+    html += `<div class="empty-sem">
+      📂&nbsp; Aucun module pour ce semestre —
+      <strong style="color:var(--a)">Ajoutez-en un !</strong>
+    </div>`;
+  } else {
+    html += `<div class="mods-grid">`;
+    mods.forEach(m => { html += renderMod(m, s); });
+    html += `</div>`;
+  }
+  return html;
+}
+
+function renderMod(m, s) {
+  let filesHtml = '';
+  m.files.forEach(f => {
+    const cls = f.type === 'cours' ? 'fc' : f.type === 'td' ? 'ft' : 'fe';
+    const lbl = f.type === 'cours' ? 'COURS' : f.type === 'td' ? 'TD' : 'EXAM';
+    filesHtml += `
+      <div class="file-row">
+        <div class="fi">
+          <span class="ftype ${cls}">${lbl}</span>
+          <span class="fname">${f.name}</span>
+        </div>
+        <div class="file-btns">
+          <a href="${f.url}" class="dl" target="_blank">↓ PDF</a>
+          <button class="del-f" onclick="deleteFile('${m.id}','${f.id}',${s})">✕</button>
+        </div>
+      </div>`;
+  });
+
+  const empty = `<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">
+    Aucun fichier — cliquez sur + pour ajouter
+  </div>`;
+
+  return `
+    <div class="mod-card" id="mod-${m.id}">
+      <div class="mod-head">
+        <div class="mod-head-left">
+          <div class="mod-icon">${m.icon}</div>
+          <div>
+            <div class="mod-name">${m.name}</div>
+            <div class="mod-code">${m.code} · ${m.files.length} fichier${m.files.length !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <div class="mod-actions">
+          <button class="ico-btn" title="Ajouter fichier" onclick="openAddFile('${m.id}',${s})">+</button>
+          <button class="ico-btn del" title="Supprimer" onclick="deleteModule('${m.id}',${s})">✕</button>
+        </div>
+      </div>
+      <div class="files-area">${filesHtml || empty}</div>
+      <div class="add-file-row">
+        <div class="upload-zone" onclick="openAddFile('${m.id}',${s})">
+          <span style="font-size:16px">📎</span>
+          <span class="uz-text"><strong>Ajouter un document</strong> — Cours, TD ou Examen</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ========== SWITCH ==========
+function switchFil(k) {
+  currentFil = k;
+  currentSem = 1;
+  buildFilTabs();
+  buildSemTabs();
+  buildPanels();
+  updateStats();
+}
+
+function switchSem(s) {
+  currentSem = s;
+  document.querySelectorAll('.stab').forEach((b, i) => {
+    b.classList.toggle('active', i + 1 === s);
+  });
+  document.querySelectorAll('.sem-content').forEach((p, i) => {
+    p.classList.toggle('active', i + 1 === s);
+  });
+}
+
+// ========== ADD MODULE ==========
+function openAddMod(s) {
+  pendingModSem = s || currentSem;
+  const sel = document.getElementById('mod-sem-in');
+  sel.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = SEM_LABELS[i];
+    if (i === pendingModSem) o.selected = true;
+    sel.appendChild(o);
+  }
+  document.getElementById('mod-name-in').value = '';
+  document.getElementById('mod-code-in').value = '';
+  document.getElementById('mod-icon-in').value = '';
+  document.getElementById('modal-mod').classList.add('open');
+}
+
+function saveModule() {
+  const name = document.getElementById('mod-name-in').value.trim();
+  const code = document.getElementById('mod-code-in').value.trim();
+  const icon = document.getElementById('mod-icon-in').value.trim() || '📄';
+  const s = parseInt(document.getElementById('mod-sem-in').value);
+  if (!name) { alert('Veuillez saisir un nom de module'); return; }
+  const mod = { id: uid(), name, code: code || 'MOD', icon, files: [] };
+  if (!FILIERES[currentFil].sems[s]) FILIERES[currentFil].sems[s] = [];
+  FILIERES[currentFil].sems[s].push(mod);
+  closeModal('modal-mod');
+  currentSem = s;
+  buildSemTabs();
+  buildPanels();
+  updateStats();
+  toast('✓ Module "' + name + '" ajouté au S' + s);
+}
+
+// ========== ADD FILE ==========
+function openAddFile(modId, s) {
+  pendingFileMod = { modId, s };
+  document.getElementById('file-name-in').value = '';
+  document.getElementById('file-url-in').value = '';
+  document.getElementById('modal-file').classList.add('open');
+}
+
+function saveFile() {
+  const name = document.getElementById('file-name-in').value.trim();
+  const type = document.getElementById('file-type-in').value;
+  const url = document.getElementById('file-url-in').value.trim() || '#';
+  if (!name) { alert('Veuillez saisir un titre'); return; }
+  const { modId, s } = pendingFileMod;
+  const mod = FILIERES[currentFil].sems[s].find(m => m.id === modId);
+  if (!mod) return;
+  mod.files.push({ id: uid(), name, type, url });
+  closeModal('modal-file');
+  buildPanels();
+  switchSem(currentSem);
+  updateStats();
+  toast('✓ Document "' + name + '" ajouté !');
+}
+
+// ========== DELETE ==========
+function deleteFile(modId, fileId, s) {
+  const mod = FILIERES[currentFil].sems[s].find(m => m.id === modId);
+  if (!mod) return;
+  mod.files = mod.files.filter(f => f.id !== fileId);
+  buildPanels();
+  switchSem(currentSem);
+  updateStats();
+  toast('Fichier supprimé');
+}
+
+function deleteModule(modId, s) {
+  if (!confirm('Supprimer ce module et tous ses fichiers ?')) return;
+  FILIERES[currentFil].sems[s] = FILIERES[currentFil].sems[s].filter(m => m.id !== modId);
+  buildPanels();
+  updateStats();
+  toast('Module supprimé');
+}
+
+// ========== STATS ==========
+function updateStats() {
+  let totalFiles = 0, totalMods = 0;
+  const fil = FILIERES[currentFil];
+  Object.values(fil.sems).forEach(mods => {
+    totalMods += mods.length;
+    mods.forEach(m => totalFiles += m.files.length);
+  });
+  document.getElementById('s-files').textContent = totalFiles;
+  document.getElementById('s-mods').textContent = totalMods;
+}
+
+// ========== CLOSE MODAL ON OUTSIDE CLICK ==========
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => {
+    if (e.target === o) o.classList.remove('open');
+  });
+});
+
+// ========== INIT ==========
+buildNavSem();
+buildFilTabs();
+buildSemTabs();
+buildPanels();
+updateStats();
+</script>
+</body>
+</html>
