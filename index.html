@@ -4,217 +4,518 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ScienceHub</title>
-
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Segoe UI, sans-serif;
-}
-
-body{
-    background:#0d1b2a;
-    color:white;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0f1e; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+:root {
+  --accent: #4cc9f0;
+  --accent2: #7b5ea7;
+  --card: #111827;
+  --card2: #1a2236;
+  --border: rgba(76,201,240,0.15);
+  --border2: rgba(76,201,240,0.3);
+  --text-muted: #8b9ab0;
+  --radius: 14px;
 }
 
 /* ===== NAVBAR ===== */
-nav{
-    background:#1b263b;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 8%;
-    position:sticky;
-    top:0;
-    z-index:1000;
-    box-shadow:0 2px 10px rgba(0,0,0,.4);
+nav {
+  background: rgba(10,15,30,0.95);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 7%;
+  height: 66px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
 }
-
-.logo{
-    color:#4cc9f0;
-    font-size:30px;
-    font-weight:bold;
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-
-nav ul{
-    display:flex;
-    list-style:none;
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4cc9f0, #7b5ea7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
 }
-
-nav ul li{
-    position:relative;
+nav ul { display: flex; list-style: none; gap: 2px; align-items: center; }
+nav ul li a {
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: .2s;
+  display: block;
 }
-
-nav ul li a{
-    color:white;
-    text-decoration:none;
-    padding:15px 20px;
-    display:block;
-    transition:0.3s;
+nav ul li a:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
+.nav-btn {
+  background: var(--accent);
+  color: #0a0f1e !important;
+  padding: 8px 18px !important;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
 }
+.nav-btn:hover { background: #38b6d9 !important; color: #fff !important; }
 
-nav ul li a:hover{
-    color:#4cc9f0;
+/* ===== DROPDOWN ===== */
+.dropdown { position: relative; }
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #131c2e;
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  min-width: 170px;
+  padding: 6px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.5);
 }
-
-/* ===== MENU DEROULANT ===== */
-.dropdown-content{
-    display:none;
-    position:absolute;
-    background:#27374d;
-    min-width:180px;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 5px 15px rgba(0,0,0,.5);
+.dropdown-menu a {
+  display: block;
+  padding: 9px 14px;
+  border-radius: 8px;
+  color: var(--text-muted) !important;
+  font-size: 13px;
+  transition: .15s;
 }
+.dropdown-menu a:hover { background: rgba(76,201,240,0.1); color: var(--accent) !important; }
+.dropdown:hover .dropdown-menu { display: block; }
 
-.dropdown-content a{
-    padding:12px;
-    display:block;
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  padding: 90px 7% 70px;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(76,201,240,0.12), transparent);
 }
-
-.dropdown-content a:hover{
-    background:#00b4d8;
-    color:white;
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(76,201,240,0.1);
+  border: 1px solid var(--border2);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin-bottom: 24px;
 }
-
-.dropdown:hover .dropdown-content{
-    display:block;
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
 }
-
-/* ===== SECTIONS ===== */
-section{
-    width:85%;
-    margin:50px auto;
+.hero h1 span {
+  background: linear-gradient(135deg, #4cc9f0, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-
-.section-title{
-    color:#4cc9f0;
-    margin-bottom:20px;
+.hero p {
+  color: var(--text-muted);
+  font-size: 17px;
+  max-width: 520px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
 }
-
-.module-card{
-    background:#1b263b;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 0 15px rgba(0,170,255,.2);
+.hero-btns { display: flex; gap: 12px; justify-content: center; }
+.btn-primary {
+  background: var(--accent);
+  color: #0a0f1e;
+  padding: 13px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: .2s;
 }
-
-.ressource{
-    background:#27374d;
-    padding:15px;
-    margin-bottom:15px;
-    border-left:5px solid #00b4d8;
-    border-radius:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.btn-primary:hover { background: #38b6d9; transform: translateY(-1px); }
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  padding: 13px 28px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: .2s;
+  border: 1px solid var(--border2);
 }
+.btn-outline:hover { background: rgba(76,201,240,0.08); }
 
-.examen{
-    border-left-color:#ffb703;
+/* ===== STATS ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 640px;
+  margin: 50px auto 0;
+  padding: 0 7%;
 }
-
-.ressource a{
-    background:#00b4d8;
-    color:white;
-    text-decoration:none;
-    padding:10px 18px;
-    border-radius:8px;
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
 }
+.stat-num { font-size: 30px; font-weight: 800; color: var(--accent); }
+.stat-lbl { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-.ressource a:hover{
-    background:#0096c7;
+/* ===== CONTENT ===== */
+.content { padding: 60px 7% 80px; }
+.semester { margin-bottom: 64px; }
+.sem-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.sem-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(76,201,240,0.2), rgba(123,94,167,0.2));
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.sem-title { font-size: 22px; font-weight: 700; }
+.sem-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.module {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: .2s;
+}
+.module:hover { border-color: var(--border2); transform: translateY(-2px); }
+.module-head {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.module-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: rgba(76,201,240,0.12);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.module-name { font-size: 15px; font-weight: 600; }
+.module-code { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.files { padding: 12px 20px 16px; }
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.file-row:last-child { border-bottom: none; }
+.file-info { display: flex; align-items: center; gap: 9px; }
+.file-type {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 5px;
+  letter-spacing: .5px;
+}
+.type-cours { background: rgba(76,201,240,0.15); color: #4cc9f0; }
+.type-td { background: rgba(167,139,250,0.15); color: #a78bfa; }
+.type-exam { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.file-name { font-size: 13px; color: #c9d4e3; }
+.dl-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(76,201,240,0.1);
+  color: var(--accent);
+  border: 1px solid var(--border2);
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: .15s;
+  white-space: nowrap;
+}
+.dl-btn:hover { background: rgba(76,201,240,0.2); }
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.soon-badge {
+  display: inline-block;
+  background: rgba(123,94,167,0.15);
+  border: 1px solid rgba(123,94,167,0.3);
+  color: #a78bfa;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-weight: 600;
 }
 </style>
 </head>
-
 <body>
 
 <!-- NAVBAR -->
 <nav>
-
-<div class="logo">ScienceHub</div>
-
-<ul>
-
-<li><a href="#">Accueil</a></li>
-
-<li class="dropdown">
-<a href="#">Semestres ▼</a>
-
-<div class="dropdown-content">
-<a href="#s1">Semestre 1</a>
-<a href="#s2">Semestre 2</a>
-<a href="#s3">Semestre 3</a>
-<a href="#s4">Semestre 4</a>
-<a href="#s5">Semestre 5</a>
-<a href="#s6">Semestre 6</a>
-</div>
-
-</li>
-
-<li><a href="#">Examens</a></li>
-
-<li><a href="#">Contact</a></li>
-
-</ul>
-
+  <div class="logo">
+    <div class="logo-icon">S</div>
+    ScienceHub
+  </div>
+  <ul>
+    <li><a href="#">Accueil</a></li>
+    <li class="dropdown">
+      <a href="#">Semestres ▾</a>
+      <div class="dropdown-menu">
+        <a href="#s1">Semestre 1</a>
+        <a href="#s2">Semestre 2</a>
+        <a href="#s3">Semestre 3</a>
+        <a href="#s4">Semestre 4</a>
+        <a href="#s5">Semestre 5</a>
+        <a href="#s6">Semestre 6</a>
+      </div>
+    </li>
+    <li><a href="#">Examens</a></li>
+    <li><a href="#">Contact</a></li>
+    <li><a href="#" class="nav-btn">Espace étudiant</a></li>
+  </ul>
 </nav>
 
-<!-- S1 -->
-<section id="s1">
-
-<h1 class="section-title">Semestre 1</h1>
-
-<div class="module-card">
-
-<h2>Analyse 1</h2>
-
-<div class="ressource">
-<span>📖 Cours Analyse 1.pdf</span>
-<a href="#">Télécharger</a>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🎓 Ressources universitaires gratuites</div>
+  <h1>Toutes vos ressources<br><span>scientifiques</span> en un clic</h1>
+  <p>Cours, TD, examens et corrigés pour toutes les filières — organisés par semestre et par module.</p>
+  <div class="hero-btns">
+    <a href="#s1" class="btn-primary">Parcourir les cours</a>
+    <a href="#" class="btn-outline">Voir les examens</a>
+  </div>
 </div>
 
-<div class="ressource">
-<span>📝 TD Analyse 1.pdf</span>
-<a href="#">Télécharger</a>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-num">120+</div>
+    <div class="stat-lbl">Fichiers disponibles</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">6</div>
+    <div class="stat-lbl">Semestres couverts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">100%</div>
+    <div class="stat-lbl">Gratuit</div>
+  </div>
 </div>
 
-<div class="ressource examen">
-<span>🎓 Examen Analyse 1.pdf</span>
-<a href="#">Télécharger</a>
-</div>
+<!-- CONTENU -->
+<div class="content">
+
+  <!-- SEMESTRE 1 -->
+  <div class="semester" id="s1">
+    <div class="sem-header">
+      <div class="sem-badge">S1</div>
+      <div>
+        <div class="sem-title">Semestre 1</div>
+        <div class="sem-sub">Fondements des mathématiques et des sciences</div>
+      </div>
+    </div>
+    <div class="modules-grid">
+
+      <div class="module">
+        <div class="module-head">
+          <div class="module-icon">∫</div>
+          <div>
+            <div class="module-name">Analyse 1</div>
+            <div class="module-code">MAT101 · 3 fichiers</div>
+          </div>
+        </div>
+        <div class="files">
+          <div class="file-row">
+            <div class="file-info">
+              <span class="file-type type-cours">COURS</span>
+              <span class="file-name">Analyse 1 — Cours complet</span>
+            </div>
+            <a href="#" class="dl-btn">↓ PDF</a>
+          </div>
+          <div class="file-row">
+            <div class="file-info">
+              <span class="file-type type-td">TD</span>
+              <span class="file-name">Série d'exercices TD1</span>
+            </div>
+            <a href="#" class="dl-btn">↓ PDF</a>
+          </div>
+          <div class="file-row">
+            <div class="file-info">
+              <span class="file-type type-exam">EXAM</span>
+              <span class="file-name">Examen 2023 + corrigé</span>
+            </div>
+            <a href="#" class="dl-btn">↓ PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="module">
+        <div class="module-head">
+          <div class="module-icon">∑</div>
+          <div>
+            <div class="module-name">Algèbre 1</div>
+            <div class="module-code">MAT102 · 2 fichiers</div>
+          </div>
+        </div>
+        <div class="files">
+          <div class="file-row">
+            <div class="file-info">
+              <span class="file-type type-cours">COURS</span>
+              <span class="file-name">Algèbre linéaire — Cours</span>
+            </div>
+            <a href="#" class="dl-btn">↓ PDF</a>
+          </div>
+          <div class="file-row">
+            <div class="file-info">
+              <span class="file-type type-td">TD</span>
+              <span class="file-name">TD Algèbre — Matrices</span>
+            </div>
+            <a href="#" class="dl-btn">↓ PDF</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEMESTRE 2 -->
+  <div class="semester" id="s2">
+    <div class="sem-header">
+      <div class="sem-badge">S2</div>
+      <div>
+        <div class="sem-title">Semestre 2</div>
+        <div class="sem-sub">Approfondissement et premières spécialisations</div>
+      </div>
+    </div>
+    <div class="modules-grid">
+      <div class="module">
+        <div class="module-head">
+          <div class="module-icon">∂</div>
+          <div>
+            <div class="module-name">Analyse 2</div>
+            <div class="module-code">MAT201</div>
+          </div>
+        </div>
+        <div class="files">
+          <div class="file-row">
+            <div class="file-info">
+              <span class="file-type type-cours">COURS</span>
+              <span class="file-name">Intégrales et suites — Cours</span>
+            </div>
+            <a href="#" class="dl-btn">↓ PDF</a>
+          </div>
+        </div>
+      </div>
+      <div class="module" style="display:flex;align-items:center;justify-content:center;min-height:120px">
+        <div class="empty-state">
+          <div style="font-size:28px;margin-bottom:8px">📂</div>
+          Plus de modules bientôt
+          <span class="soon-badge" style="display:block;margin:8px auto;width:fit-content">À venir</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEMESTRE 3 -->
+  <div class="semester" id="s3">
+    <div class="sem-header">
+      <div class="sem-badge">S3</div>
+      <div>
+        <div class="sem-title">Semestre 3</div>
+        <div class="sem-sub">Contenu en préparation</div>
+      </div>
+    </div>
+    <div class="modules-grid">
+      <div class="module" style="min-height:140px;display:flex;align-items:center;justify-content:center">
+        <div class="empty-state">
+          <div style="font-size:28px;margin-bottom:8px">🔒</div>
+          Contenu à venir
+          <span class="soon-badge" style="display:block;margin:8px auto;width:fit-content">En cours d'ajout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEMESTRES 4 & 5 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div class="semester" id="s4" style="margin-bottom:0">
+      <div class="sem-header">
+        <div class="sem-badge">S4</div>
+        <div>
+          <div class="sem-title">Semestre 4</div>
+          <div class="sem-sub">À venir</div>
+        </div>
+      </div>
+    </div>
+    <div class="semester" id="s5" style="margin-bottom:0">
+      <div class="sem-header">
+        <div class="sem-badge">S5</div>
+        <div>
+          <div class="sem-title">Semestre 5</div>
+          <div class="sem-sub">À venir</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEMESTRE 6 -->
+  <div class="semester" id="s6" style="margin-top:40px">
+    <div class="sem-header">
+      <div class="sem-badge">S6</div>
+      <div>
+        <div class="sem-title">Semestre 6</div>
+        <div class="sem-sub">À venir</div>
+      </div>
+    </div>
+  </div>
 
 </div>
-
-</section>
-
-<!-- S2 -->
-<section id="s2">
-<h1 class="section-title">Semestre 2</h1>
-</section>
-
-<!-- S3 -->
-<section id="s3">
-<h1 class="section-title">Semestre 3</h1>
-</section>
-
-<!-- S4 -->
-<section id="s4">
-<h1 class="section-title">Semestre 4</h1>
-</section>
-
-<!-- S5 -->
-<section id="s5">
-<h1 class="section-title">Semestre 5</h1>
-</section>
-
-<!-- S6 -->
-<section id="s6">
-<h1 class="section-title">Semestre 6</h1>
-</section>
-
 </body>
 </html>
