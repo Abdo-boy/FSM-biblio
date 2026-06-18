@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Bibliothèque Automatique - UMI FS</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            color: #1e2a3a;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px 35px;
+            transition: all 0.2s;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e8edf4;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a5e2a;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #5a6a7a;
+            font-weight: 400;
+        }
+
+        .header .uni-badge {
+            background: #1a5e2a;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .toolbar .btn {
+            background: #f0f2f5;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e2a3a;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toolbar .btn:hover {
+            background: #e2e6ed;
+        }
+        .toolbar .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: #1a5e2a !important;
+            color: white !important;
+        }
+        .btn-primary:hover {
+            background: #134d21 !important;
+        }
+
+        .btn-danger {
+            background: #d32f2f !important;
+            color: white !important;
+        }
+        .btn-danger:hover {
+            background: #b71c1c !important;
+        }
+
+        .btn-outline {
+            background: transparent !important;
+            border: 1.5px solid #1a5e2a !important;
+            color: #1a5e2a !important;
+        }
+        .btn-outline:hover {
+            background: #1a5e2a !important;
+            color: white !important;
+        }
+
+        .style-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .style-selector label {
+            font-weight: 500;
+            font-size: 14px;
+            color: #3a4a5a;
+        }
+
+        .style-selector select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1.5px solid #d0d7e0;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e2a3a;
+            cursor: pointer;
+            outline: none;
+        }
+        .style-selector select:focus {
+            border-color: #1a5e2a;
+            box-shadow: 0 0 0 2px rgba(26, 94, 42, 0.2);
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .row {
+            display: flex;
+            flex-direction: row;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .col {
+            flex: 1 1 45%;
+            min-width: 300px;
+        }
+
+        .panel {
+            background: #fafbfc;
+            border-radius: 12px;
+            border: 1px solid #e8edf4;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1a5e2a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 240px;
+            padding: 14px;
+            border: 1px solid #d0d7e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            resize: vertical;
+            background: white;
+            transition: border 0.2s;
+        }
+        textarea:focus {
+            border-color: #1a5e2a;
+            box-shadow: 0 0 0 3px rgba(26, 94, 42, 0.1);
+            outline: none;
+        }
+
+        .result-area {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #d0d7e0;
+            padding: 14px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 13.5px;
+            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        .result-area .empty-message {
+            color: #8a9aaa;
+            text-align: center;
+            padding: 40px 0;
+            font-style: italic;
+        }
+
+        .stats {
+            display: flex;
+            gap: 25px;
+            font-size: 13px;
+            color: #3a4a5a;
+            margin-top: 8px;
+        }
+        .stats span {
+            background: #eef2f7;
+            padding: 4px 14px;
+            border-radius: 30px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            border-top: 1px solid #e8edf4;
+            padding-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: #6a7a8a;
+        }
+
+        .footer a {
+            color: #1a5e2a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .container {
+                padding: 18px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: start;
+                gap: 8px;
+            }
+            .style-selector {
+                margin-left: 0;
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .row {
+                flex-direction: column;
+            }
+            .col {
+                flex: 1 1 100%;
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        .result-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .result-area::-webkit-scrollbar-track {
+            background: #f0f2f5;
+        }
+        .result-area::-webkit-scrollbar-thumb {
+            background: #c4cdd8;
+            border-radius: 10px;
+        }
+        .result-area::-webkit-scrollbar-thumb:hover {
+            background: #a0abb8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <h1>📚 Bibliothèque Automatique</h1>
+                <span class="subtitle">Extracteur de références</span>
+            </div>
+            <span class="uni-badge">UMI FS</span>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <button class="btn btn-primary" id="extractBtn">🔍 Extraire</button>
+            <button class="btn btn-outline" id="copyBtn">📋 Copier</button>
+            <button class="btn btn-outline" id="exportBtn">💾 Exporter (BibTeX)</button>
+            <button class="btn btn-danger" id="clearBtn">🗑️ Effacer</button>
+
+            <div class="style-selector">
+                <label for="styleSelect">Style :</label>
+                <select id="styleSelect">
+                    <option value="apa">APA (7e)</option>
+                    <option value="mla">MLA (9e)</option>
+                    <option value="chicago">Chicago (17e)</option>
+                    <option value="ieee">IEEE</option>
+                    <option value="vancouver">Vancouver</option>
+                    <option value="harvard">Harvard</option>
+                    <option value="numeric">Numérique</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- MAIN ROW -->
+        <div class="row">
+            <!-- LEFT: Source -->
+            <div class="col">
+                <div class="panel">
+                    <div class="panel-title">📄 Document source</div>
+                    <textarea id="sourceText" placeholder="Collez ici le texte de votre document (mémoire, article, etc.) contenant des références bibliographiques..."></textarea>
+                    <div class="stats">
+                        <span id="charCount">0 caractères</span>
+                        <span id="refCount">0 références détectées</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Résultat -->
+            <div class="col">
+                <div class="panel">
+                    <div class="panel-title">📖 Bibliographie extraite</div>
+                    <div class="result-area" id="resultArea">
+                        <div class="empty-message">Aucune référence extraite pour l'instant.<br>Collez votre document et cliquez sur « Extraire ».</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <span>© 2026 — Université Moulay Ismail, Faculté des Sciences</span>
+            <span>Développé avec ❤️ pour la communauté UMI FS</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  BIBLIOGRAPHIC EXTRACTOR - JAVASCRIPT ENGINE
+        // ============================================================
+
+        /**
+         * ReferenceExtractor class (ported from Python)
+         */
+        class ReferenceExtractor {
+            constructor() {
+                this.references = [];
+                this.rawText = '';
+                this.citationPatterns = [
+                    // [1] ... [2] ...
+                    { regex: /\[(\d+)\]\s*(.+?)(?=\[\d+\]|$)/gs, type: 'numeric' },
+                    // (Author, Year)
+                    { regex: /\(([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*),\s*(\d{4})\)/g, type: 'author_year' },
+                    // Author (Year)
+                    { regex: /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*\((\d{4})\)/g, type: 'author_year' },
+                    // Author et al., Year
+                    { regex: /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+et\s+al\.,?\s*(\d{4})/gi, type: 'author_year' },
+                    // Author A., Year
+                    { regex: /([A-Z][a-z]+)\s+[A-Z]\.\s*,\s*(\d{4})/g, type: 'author_year' },
+                ];
+                this.styleTemplates = {
+                    apa: this._formatAPA,
+                    mla: this._formatMLA,
+                    chicago: this._formatChicago,
+                    ieee: this._formatIEEE,
+                    vancouver: this._formatVancouver,
+                    harvard: this._formatHarvard,
+                    numeric: this._formatNumeric,
+                };
+            }
+
+            // ---------- Extraction ----------
+            extractFromText(text) {
+                this.rawText = text;
+                this.references = [];
+
+                // 1) Try to find bibliography section
+                const bibSection = this._findBibliographySection(text);
+                if (bibSection) {
+                    const refs = this._parseBibliographySection(bibSection);
+                    if (refs.length > 0) {
+                        this.references = refs;
+                        return this.references;
+                    }
+                }
+
+                // 2) Extract citations (Author, Year)
+                const citations = this._extractCitations(text);
+                if (citations.length > 0) {
+                    this.references = citations;
+                    return this.references;
+                }
+
+                // 3) Fallback: generic pattern matching
+                const fallback = this._extractFallback(text);
+                if (fallback.length > 0) {
+                    this.references = fallback;
+                    return this.references;
+                }
+
+                return [];
+            }
+
+            _findBibliographySection(text) {
+                const patterns = [
+                    /(?:bibliographie|références|references|works\s+cited|bibliography)\s*:?\s*(.+?)(?=\n\n\s*[A-Z]|\s*$)/is,
+                    /(?:bibliographie|références|references|works\s+cited|bibliography)\s*\n-{3,}\s*\n(.+?)(?=\n\n\s*[A-Z]|\s*$)/is,
+                ];
+                for (const pat of patterns) {
+                    const match = text.match(pat);
+                    if (match) return match[1] || match[0];
+                }
+                return null;
+            }
+
+            _parseBibliographySection(section) {
+                const refs = [];
+                // Pattern: [1] ...
+                const numMatches = section.matchAll(/\[(\d+)\]\s*(.+?)(?=\[\d+\]|$)/gs);
+                let hasNum = false;
+                for (const m of numMatches) {
+                    hasNum = true;
+                    const ref = this._parseSingleReference(m[2].trim(), m[1]);
+                    if (ref) refs.push(ref);
+                }
+                if (hasNum) return refs;
+
+                // Otherwise, split by lines
+                const lines = section.split('\n');
+                let current = '';
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) {
+                        if (current) {
+                            const ref = this._parseSingleReference(current);
+                            if (ref) refs.push(ref);
+                            current = '';
+                        }
+                    } else {
+                        current += ' ' + trimmed;
+                    }
+                }
+                if (current) {
+                    const ref = this._parseSingleReference(current);
+                    if (ref) refs.push(ref);
+                }
+                return refs;
+            }
+
+            _parseSingleReference(text, id = null) {
+                const ref = {
+                    id: id || String(this.references.length + 1),
+                    authors: [],
+                    year: '',
+                    title: '',
+                    journal: '',
+                    volume: '',
+                    pages: '',
+                    publisher: '',
+                    doi: '',
+                    url: '',
+                    raw: text,
+                };
+
+                // Year
+                const yearMatch = text.match(/\b(19|20)\d{2}\b/);
+                if (yearMatch) ref.year = yearMatch[0];
+
+                // Authors (proper names)
+                const authorMatches = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g);
+                if (authorMatches) {
+                    // filter out common words that might be false positives
+                    const exclude = ['Title', 'Journal', 'Volume', 'Pages', 'Publisher', 'DOI', 'URL', 'The', 'And', 'For',
+                        'With'
+                    ];
+                    const filtered = authorMatches.filter(a => !exclude.includes(a) && a.length > 2);
+                    ref.authors = filtered.slice(0, 3);
+                }
+
+                // DOI
+                const doiMatch = text.match(/10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i);
+                if (doiMatch) ref.doi = doiMatch[0];
+
+                // URL
+                const urlMatch = text.match(/https?:\/\/[^\s]+/);
+                if (urlMatch) ref.url = urlMatch[0];
+
+                // Title (between quotes, guillemets, asterisks, underscores)
+                let titleMatch = text.match(/"([^"]+)"/);
+                if (!titleMatch) titleMatch = text.match(/«([^»]+)»/);
+                if (!titleMatch) titleMatch = text.match(/\*([^*]+)\*/);
+                if (!titleMatch) titleMatch = text.match(/_(.+?)_/);
+                if (titleMatch) ref.title = titleMatch[1];
+
+                return ref;
+            }
+
+            _extractCitations(text) {
+                const refs = [];
+                const seen = new Set();
+                const patterns = [
+                    /\(([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*),\s*(\d{4})\)/g,
+                    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*\((\d{4})\)/g,
+                ];
+                for (const pat of patterns) {
+                    let m;
+                    while ((m = pat.exec(text)) !== null) {
+                        const author = m[1];
+                        const year = m[2];
+                        const key = author + '_' + year;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            refs.push({
+                                id: String(refs.length + 1),
+                                authors: [author],
+                                year: year,
+                                title: '',
+                                raw: m[0],
+                            });
+                        }
+                    }
+                }
+                return refs;
+            }
+
+            _extractFallback(text) {
+                const refs = [];
+                const lines = text.split('\n');
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+                    if (trimmed.match(/\[\d+\]/) || trimmed.match(/\d{4}/)) {
+                        const ref = this._parseSingleReference(trimmed);
+                        if (ref && (ref.authors.length > 0 || ref.year)) {
+                            refs.push(ref);
+                        }
+                    }
+                }
+                return refs;
+            }
+
+            // ---------- Formatting ----------
+            formatBibliography(style = 'apa', sortBy = 'year') {
+                if (this.references.length === 0) return 'Aucune référence trouvée.';
+
+                let sorted = [...this.references];
+                if (sortBy === 'year') {
+                    sorted.sort((a, b) => (b.year || '0000').localeCompare(a.year || '0000'));
+                } else if (sortBy === 'author') {
+                    sorted.sort((a, b) => ((a.authors[0] || '').localeCompare(b.authors[0] || '')));
+                }
+
+                const formatter = this.styleTemplates[style] || this.styleTemplates.apa;
+                return sorted.map(ref => formatter.call(this, ref)).join('\n\n');
+            }
+
+            // ---- Style formatters ----
+            _formatAPA(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                const journal = ref.journal || '';
+                const vol = ref.volume || '';
+                const pages = ref.pages || '';
+                const doi = ref.doi || '';
+                let result = `${authors} (${year}). ${title}.`;
+                if (journal) {
+                    result += ` ${journal}`;
+                    if (vol) result += `, ${vol}`;
+                    if (pages) result += `, ${pages}`;
+                }
+                if (doi) result += ` https://doi.org/${doi}`;
+                else if (ref.url) result += ` Disponible sur: ${ref.url}`;
+                return result;
+            }
+
+            _formatMLA(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                const journal = ref.journal || '';
+                const vol = ref.volume || '';
+                const pages = ref.pages || '';
+                let result = `${authors}. "${title}."`;
+                if (journal) {
+                    result += ` ${journal}`;
+                    if (vol) result += `, vol. ${vol}`;
+                    if (pages) result += `, pp. ${pages}`;
+                    result += `, ${year}.`;
+                } else {
+                    result += ` ${year}.`;
+                }
+                return result;
+            }
+
+            _formatChicago(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                const journal = ref.journal || '';
+                const vol = ref.volume || '';
+                const pages = ref.pages || '';
+                const doi = ref.doi || '';
+                let result = `${authors}. ${year}. "${title}."`;
+                if (journal) {
+                    result += ` ${journal}`;
+                    if (vol) result += ` ${vol}`;
+                    if (pages) result += `: ${pages}`;
+                } else {
+                    result += ` ${title}.`;
+                }
+                if (doi) result += ` https://doi.org/${doi}`;
+                return result;
+            }
+
+            _formatIEEE(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                const journal = ref.journal || '';
+                const vol = ref.volume || '';
+                const pages = ref.pages || '';
+                const doi = ref.doi || '';
+                let result = `[${ref.id}] ${authors}, "${title},"`;
+                if (journal) {
+                    result += ` ${journal}`;
+                    if (vol) result += `, vol. ${vol}`;
+                    if (pages) result += `, pp. ${pages}`;
+                    result += `, ${year}.`;
+                } else {
+                    result += ` ${year}.`;
+                }
+                if (doi) result += ` doi: ${doi}`;
+                return result;
+            }
+
+            _formatVancouver(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                const journal = ref.journal || '';
+                const vol = ref.volume || '';
+                const pages = ref.pages || '';
+                let result = `${authors}. ${title}.`;
+                if (journal) {
+                    result += ` ${journal}`;
+                    if (vol) result += ` ${vol}`;
+                    if (pages) result += `:${pages}`;
+                    result += ` ${year}.`;
+                } else {
+                    result += ` ${year}.`;
+                }
+                return result;
+            }
+
+            _formatHarvard(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                const journal = ref.journal || '';
+                const vol = ref.volume || '';
+                const pages = ref.pages || '';
+                let result = `${authors} (${year}), '${title}'`;
+                if (journal) {
+                    result += `, ${journal}`;
+                    if (vol) result += `, ${vol}`;
+                    if (pages) result += `, pp.${pages}`;
+                } else {
+                    result += `.`;
+                }
+                return result;
+            }
+
+            _formatNumeric(ref) {
+                const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
+                const year = ref.year || 's.d.';
+                const title = ref.title || 'Titre inconnu';
+                return `[${ref.id}] ${authors}, ${title}, ${year}.`;
+            }
+
+            // ---------- Export BibTeX ----------
+            toBibTeX() {
+                if (this.references.length === 0) return '';
+                let lines = [];
+                for (const ref of this.references) {
+                    const key = (ref.authors[0] || 'unknown') + (ref.year || '');
+                    const cleanKey = key.replace(/[^a-zA-Z0-9]/g, '');
+                    lines.push(`@article{${cleanKey},`);
+                    lines.push(`  author = {${ref.authors.join(', ') || 'Unknown'}},`);
+                    lines.push(`  title = {${ref.title || 'Unknown title'}},`);
+                    lines.push(`  year = {${ref.year || 's.d.'}},`);
+                    if (ref.journal) lines.push(`  journal = {${ref.journal}},`);
+                    if (ref.volume) lines.push(`  volume = {${ref.volume}},`);
+                    if (ref.pages) lines.push(`  pages = {${ref.pages}},`);
+                    if (ref.doi) lines.push(`  doi = {${ref.doi}},`);
+                    if (ref.url) lines.push(`  url = {${ref.url}},`);
+                    lines.push(`},`);
+                    lines.push('');
+                }
+                return lines.join('\n');
+            }
+        }
+
+        // ============================================================
+        //  UI CONTROLLER
+        // ============================================================
+
+        const extractor = new ReferenceExtractor();
+
+        // DOM refs
+        const sourceText = document.getElementById('sourceText');
+        const resultArea = document.getElementById('resultArea');
+        const extractBtn = document.getElementById('extractBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const styleSelect = document.getElementById('styleSelect');
+        const charCount = document.getElementById('charCount');
+        const refCount = document.getElementById('refCount');
+
+        // Update stats
+        function updateStats() {
+            const text = sourceText.value;
+            charCount.textContent = text.length + ' caractères';
+            refCount.textContent = extractor.references.length + ' références détectées';
+        }
+
+        // Render bibliography
+        function renderBibliography() {
+            const style = styleSelect.value;
+            const formatted = extractor.formatBibliography(style, 'year');
+            if (formatted === 'Aucune référence trouvée.') {
+                resultArea.innerHTML = `<div class="empty-message">${formatted}</div>`;
+            } else {
+                resultArea.textContent = formatted;
+            }
+            updateStats();
+        }
+
+        // Extract action
+        function extractReferences() {
+            const text = sourceText.value;
+            if (!text.trim()) {
+                resultArea.innerHTML = `<div class="empty-message">Veuillez coller un document contenant des références.</div>`;
+                updateStats();
+                return;
+            }
+            extractor.extractFromText(text);
+            renderBibliography();
+        }
+
+        // Clear all
+        function clearAll() {
+            sourceText.value = '';
+            extractor.references = [];
+            resultArea.innerHTML = `<div class="empty-message">Aucune référence extraite.<br>Collez votre document et cliquez sur « Extraire ».</div>`;
+            updateStats();
+        }
+
+        // Copy to clipboard
+        function copyBibliography() {
+            const text = resultArea.textContent;
+            if (!text || text.includes('Aucune référence')) {
+                alert('Aucune bibliographie à copier.');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Bibliographie copiée dans le presse-papier !');
+            }).catch(() => {
+                // fallback
+                const range = document.createRange();
+                range.selectNodeContents(resultArea);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+                document.execCommand('copy');
+                alert('✅ Copié !');
+            });
+        }
+
+        // Export BibTeX
+        function exportBibTeX() {
+            const bib = extractor.toBibTeX();
+            if (!bib) {
+                alert('Aucune référence à exporter.');
+                return;
+            }
+            const blob = new Blob([bib], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bibliographie.bib';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ---- Event listeners ----
+        extractBtn.addEventListener('click', extractReferences);
+        clearBtn.addEventListener('click', clearAll);
+        copyBtn.addEventListener('click', copyBibliography);
+        exportBtn.addEventListener('click', exportBibTeX);
+        styleSelect.addEventListener('change', renderBibliography);
+
+        // Update stats on input
+        sourceText.addEventListener('input', updateStats);
+
+        // Auto-extract? We'll let user click.
+
+        // Keyboard shortcut: Ctrl+Enter to extract
+        sourceText.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                extractReferences();
+            }
+        });
+
+        // Initial state
+        updateStats();
+
+        // Show a demo hint
+        console.log('📚 Bibliothèque Automatique chargée. Collez votre texte et extrayez !');
+    </script>
+</body>
+</html>
