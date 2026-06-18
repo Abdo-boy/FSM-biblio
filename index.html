@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 Bibliothèque Automatique - UMI FS</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📚 Bibliothèque Automatique – UMI FS (PDF)</title>
+
+    <!-- PDF.js pour l'extraction du texte des PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+    </script>
+
     <style>
         /* ===== RESET & BASE ===== */
         * {
@@ -126,6 +131,26 @@
             color: white !important;
         }
 
+        .file-label {
+            background: #1a5e2a;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .file-label:hover {
+            background: #134d21;
+        }
+        .file-label input[type="file"] {
+            display: none;
+        }
+
         .style-selector {
             display: flex;
             align-items: center;
@@ -238,6 +263,15 @@
             border-radius: 30px;
         }
 
+        .file-info {
+            font-size: 13px;
+            color: #3a4a5a;
+            background: #eef2f7;
+            padding: 4px 14px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
         .footer {
             margin-top: 25px;
             border-top: 1px solid #e8edf4;
@@ -295,6 +329,17 @@
         .result-area::-webkit-scrollbar-thumb:hover {
             background: #a0abb8;
         }
+
+        /* loader */
+        .loader {
+            display: none;
+            font-size: 14px;
+            color: #1a5e2a;
+            margin-left: 10px;
+        }
+        .loader.active {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -304,13 +349,21 @@
         <div class="header">
             <div class="header-left">
                 <h1>📚 Bibliothèque Automatique</h1>
-                <span class="subtitle">Extracteur de références</span>
+                <span class="subtitle">Extracteur de références (PDF)</span>
             </div>
             <span class="uni-badge">UMI FS</span>
         </div>
 
         <!-- TOOLBAR -->
         <div class="toolbar">
+            <!-- Charger PDF -->
+            <label class="file-label" id="pdfLabel">
+                📄 Charger un PDF
+                <input type="file" id="pdfInput" accept=".pdf" />
+            </label>
+            <span class="file-info" id="fileInfo">Aucun fichier chargé</span>
+            <span class="loader" id="loader">⏳ Extraction du texte...</span>
+
             <button class="btn btn-primary" id="extractBtn">🔍 Extraire</button>
             <button class="btn btn-outline" id="copyBtn">📋 Copier</button>
             <button class="btn btn-outline" id="exportBtn">💾 Exporter (BibTeX)</button>
@@ -336,7 +389,7 @@
             <div class="col">
                 <div class="panel">
                     <div class="panel-title">📄 Document source</div>
-                    <textarea id="sourceText" placeholder="Collez ici le texte de votre document (mémoire, article, etc.) contenant des références bibliographiques..."></textarea>
+                    <textarea id="sourceText" placeholder="Collez ici le texte de votre document, ou chargez un PDF ci-dessus."></textarea>
                     <div class="stats">
                         <span id="charCount">0 caractères</span>
                         <span id="refCount">0 références détectées</span>
@@ -349,7 +402,7 @@
                 <div class="panel">
                     <div class="panel-title">📖 Bibliographie extraite</div>
                     <div class="result-area" id="resultArea">
-                        <div class="empty-message">Aucune référence extraite pour l'instant.<br>Collez votre document et cliquez sur « Extraire ».</div>
+                        <div class="empty-message">Aucune référence extraite pour l'instant.<br>Chargez un PDF ou collez du texte, puis cliquez sur « Extraire ».</div>
                     </div>
                 </div>
             </div>
@@ -364,28 +417,18 @@
 
     <script>
         // ============================================================
-        //  BIBLIOGRAPHIC EXTRACTOR - JAVASCRIPT ENGINE
+        //  PDF EXTRACTION & BIBLIOGRAPHY ENGINE
         // ============================================================
 
-        /**
-         * ReferenceExtractor class (ported from Python)
-         */
+        // --- Référence à PDF.js ---
+        const pdfjsLib = window.pdfjsLib;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // --- Classes existantes (ReferenceExtractor) ---
         class ReferenceExtractor {
             constructor() {
                 this.references = [];
                 this.rawText = '';
-                this.citationPatterns = [
-                    // [1] ... [2] ...
-                    { regex: /\[(\d+)\]\s*(.+?)(?=\[\d+\]|$)/gs, type: 'numeric' },
-                    // (Author, Year)
-                    { regex: /\(([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*),\s*(\d{4})\)/g, type: 'author_year' },
-                    // Author (Year)
-                    { regex: /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*\((\d{4})\)/g, type: 'author_year' },
-                    // Author et al., Year
-                    { regex: /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+et\s+al\.,?\s*(\d{4})/gi, type: 'author_year' },
-                    // Author A., Year
-                    { regex: /([A-Z][a-z]+)\s+[A-Z]\.\s*,\s*(\d{4})/g, type: 'author_year' },
-                ];
                 this.styleTemplates = {
                     apa: this._formatAPA,
                     mla: this._formatMLA,
@@ -397,12 +440,11 @@
                 };
             }
 
-            // ---------- Extraction ----------
             extractFromText(text) {
                 this.rawText = text;
                 this.references = [];
 
-                // 1) Try to find bibliography section
+                // 1) Try bibliography section
                 const bibSection = this._findBibliographySection(text);
                 if (bibSection) {
                     const refs = this._parseBibliographySection(bibSection);
@@ -419,7 +461,7 @@
                     return this.references;
                 }
 
-                // 3) Fallback: generic pattern matching
+                // 3) Fallback
                 const fallback = this._extractFallback(text);
                 if (fallback.length > 0) {
                     this.references = fallback;
@@ -443,7 +485,6 @@
 
             _parseBibliographySection(section) {
                 const refs = [];
-                // Pattern: [1] ...
                 const numMatches = section.matchAll(/\[(\d+)\]\s*(.+?)(?=\[\d+\]|$)/gs);
                 let hasNum = false;
                 for (const m of numMatches) {
@@ -453,7 +494,6 @@
                 }
                 if (hasNum) return refs;
 
-                // Otherwise, split by lines
                 const lines = section.split('\n');
                 let current = '';
                 for (const line of lines) {
@@ -490,14 +530,11 @@
                     raw: text,
                 };
 
-                // Year
                 const yearMatch = text.match(/\b(19|20)\d{2}\b/);
                 if (yearMatch) ref.year = yearMatch[0];
 
-                // Authors (proper names)
                 const authorMatches = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g);
                 if (authorMatches) {
-                    // filter out common words that might be false positives
                     const exclude = ['Title', 'Journal', 'Volume', 'Pages', 'Publisher', 'DOI', 'URL', 'The', 'And', 'For',
                         'With'
                     ];
@@ -505,15 +542,12 @@
                     ref.authors = filtered.slice(0, 3);
                 }
 
-                // DOI
                 const doiMatch = text.match(/10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i);
                 if (doiMatch) ref.doi = doiMatch[0];
 
-                // URL
                 const urlMatch = text.match(/https?:\/\/[^\s]+/);
                 if (urlMatch) ref.url = urlMatch[0];
 
-                // Title (between quotes, guillemets, asterisks, underscores)
                 let titleMatch = text.match(/"([^"]+)"/);
                 if (!titleMatch) titleMatch = text.match(/«([^»]+)»/);
                 if (!titleMatch) titleMatch = text.match(/\*([^*]+)\*/);
@@ -567,7 +601,6 @@
                 return refs;
             }
 
-            // ---------- Formatting ----------
             formatBibliography(style = 'apa', sortBy = 'year') {
                 if (this.references.length === 0) return 'Aucune référence trouvée.';
 
@@ -582,7 +615,7 @@
                 return sorted.map(ref => formatter.call(this, ref)).join('\n\n');
             }
 
-            // ---- Style formatters ----
+            // ---- Formatters ----
             _formatAPA(ref) {
                 const authors = ref.authors.length ? ref.authors.join(', ') : 'Auteur inconnu';
                 const year = ref.year || 's.d.';
@@ -706,7 +739,6 @@
                 return `[${ref.id}] ${authors}, ${title}, ${year}.`;
             }
 
-            // ---------- Export BibTeX ----------
             toBibTeX() {
                 if (this.references.length === 0) return '';
                 let lines = [];
@@ -745,6 +777,9 @@
         const styleSelect = document.getElementById('styleSelect');
         const charCount = document.getElementById('charCount');
         const refCount = document.getElementById('refCount');
+        const pdfInput = document.getElementById('pdfInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const loader = document.getElementById('loader');
 
         // Update stats
         function updateStats() {
@@ -769,7 +804,8 @@
         function extractReferences() {
             const text = sourceText.value;
             if (!text.trim()) {
-                resultArea.innerHTML = `<div class="empty-message">Veuillez coller un document contenant des références.</div>`;
+                resultArea.innerHTML =
+                `<div class="empty-message">Veuillez charger un PDF ou coller un document contenant des références.</div>`;
                 updateStats();
                 return;
             }
@@ -781,11 +817,14 @@
         function clearAll() {
             sourceText.value = '';
             extractor.references = [];
-            resultArea.innerHTML = `<div class="empty-message">Aucune référence extraite.<br>Collez votre document et cliquez sur « Extraire ».</div>`;
+            resultArea.innerHTML =
+                `<div class="empty-message">Aucune référence extraite.<br>Chargez un PDF ou collez du texte, puis cliquez sur « Extraire ».</div>`;
             updateStats();
+            fileInfo.textContent = 'Aucun fichier chargé';
+            pdfInput.value = '';
         }
 
-        // Copy to clipboard
+        // Copy
         function copyBibliography() {
             const text = resultArea.textContent;
             if (!text || text.includes('Aucune référence')) {
@@ -795,7 +834,6 @@
             navigator.clipboard.writeText(text).then(() => {
                 alert('✅ Bibliographie copiée dans le presse-papier !');
             }).catch(() => {
-                // fallback
                 const range = document.createRange();
                 range.selectNodeContents(resultArea);
                 const sel = window.getSelection();
@@ -824,19 +862,58 @@
             URL.revokeObjectURL(url);
         }
 
-        // ---- Event listeners ----
+        // --- Gestion du PDF ---
+        async function handlePDF(file) {
+            if (!file) return;
+            if (file.type !== 'application/pdf') {
+                alert('Veuillez sélectionner un fichier PDF.');
+                return;
+            }
+
+            loader.classList.add('active');
+            fileInfo.textContent = `📄 ${file.name} (chargement...)`;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                let fullText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n';
+                }
+                sourceText.value = fullText;
+                fileInfo.textContent = `📄 ${file.name} (${pdf.numPages} pages) — Texte extrait !`;
+                loader.classList.remove('active');
+                // Auto-extract after loading?
+                // On laisse l'utilisateur cliquer sur Extraire.
+                updateStats();
+                // Afficher un message dans la zone de résultat
+                resultArea.innerHTML =
+                    `<div class="empty-message">✅ Texte extrait du PDF (${pdf.numPages} pages). Cliquez sur « Extraire » pour générer la bibliographie.</div>`;
+            } catch (error) {
+                console.error('Erreur de lecture du PDF:', error);
+                alert('Impossible de lire ce PDF. Vérifiez qu\'il n\'est pas corrompu ou protégé.');
+                fileInfo.textContent = '❌ Erreur de lecture';
+                loader.classList.remove('active');
+            }
+        }
+
+        pdfInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handlePDF(file);
+        });
+
+        // --- Event listeners ---
         extractBtn.addEventListener('click', extractReferences);
         clearBtn.addEventListener('click', clearAll);
         copyBtn.addEventListener('click', copyBibliography);
         exportBtn.addEventListener('click', exportBibTeX);
         styleSelect.addEventListener('change', renderBibliography);
-
-        // Update stats on input
         sourceText.addEventListener('input', updateStats);
 
-        // Auto-extract? We'll let user click.
-
-        // Keyboard shortcut: Ctrl+Enter to extract
+        // Ctrl+Enter pour extraire
         sourceText.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault();
@@ -844,11 +921,9 @@
             }
         });
 
-        // Initial state
+        // Initial stats
         updateStats();
-
-        // Show a demo hint
-        console.log('📚 Bibliothèque Automatique chargée. Collez votre texte et extrayez !');
+        console.log('📚 Bibliothèque Automatique (PDF) chargée.');
     </script>
 </body>
 </html>
