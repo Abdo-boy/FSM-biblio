@@ -1,201 +1,78 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScienceHub Maroc</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bibliothèque FSM</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Font (optionnel) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- bruit de fond façon grille d'oscilloscope -->
-<div class="grid-overlay" aria-hidden="true"></div>
+  <!-- HEADER -->
+  <header class="header">
+    <h1>📚 Bibliothèque FSM</h1>
+    <p>Faculté des Sciences - Maroc</p>
+  </header>
 
-<!-- ===== NAVBAR ===== -->
-<header>
-<nav>
-    <div class="logo">
-        <span class="logo-mark">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(0 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>
-        </span>
-        <span class="logo-text">ScienceHub<span class="logo-accent">.ma</span></span>
-    </div>
-    <ul class="menu">
-        <li><a href="#" class="active">Accueil</a></li>
-        <li><a href="#domains">Filières</a></li>
-        <li><a href="#">Examens</a></li>
-        <li><a href="#">Contact</a></li>
-    </ul>
-    <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-</nav>
-</header>
+  <!-- MAIN -->
+  <main class="container">
 
-<!-- HERO -->
-<section class="hero">
-<div class="hero-content">
-    <div class="hero-eyebrow">
-        <span class="status-dot"></span>
-        <span>Réseau universitaire actif — S1 → S6</span>
-    </div>
-    <h1>
-        L'archive scientifique<br>des facultés du Maroc
-    </h1>
-    <p>
-        Cours, TD et examens classés par filière, déposés par les
-        étudiants, accessibles à tous.
-    </p>
+    <section class="intro">
+      <h2>Bienvenue 👋</h2>
+      <p>
+        Choisis ta filière pour accéder aux semestres, modules,
+        cours, TD et examens.
+      </p>
+    </section>
 
-    <div class="terminal">
-        <div class="terminal-bar">
-            <span class="terminal-dot red"></span>
-            <span class="terminal-dot yellow"></span>
-            <span class="terminal-dot green"></span>
-            <span class="terminal-path">recherche@sciencehub:~$</span>
-        </div>
-        <div class="terminal-body">
-            <span class="prompt-caret">&gt;</span>
-            <input type="text" id="search" placeholder="rechercher un module, une filière..." autocomplete="off">
-            <button id="searchBtn" aria-label="Lancer la recherche">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-            </button>
-        </div>
-    </div>
+    <!-- FILIERES -->
+    <section class="section">
+      <h2>🎓 Choisir une filière</h2>
 
-    <div class="hero-stats">
-        <div class="stat">
-            <span class="stat-value" data-count="12">0</span>
-            <span class="stat-label">filières</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" data-count="4">0</span>
-            <span class="stat-label">domaines</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" data-count="0" id="docCountStat">0</span>
-            <span class="stat-label">documents déposés</span>
-        </div>
-    </div>
-</div>
-</section>
+      <div class="grid">
 
-<!-- DOMAINES -->
-<section class="domains" id="domains">
-    <div class="section-head">
-        <span class="section-tag">// 04 domaines</span>
-        <h2>Choisir un domaine</h2>
-    </div>
+        <a href="semestres.html?filiere=MIP" class="card">
+          MIP <br><small>Maths - Info - Physique</small>
+        </a>
 
-    <div class="domain-grid">
+        <a href="semestres.html?filiere=PC" class="card">
+          PC <br><small>Physique - Chimie</small>
+        </a>
 
-        <article class="domain-card" data-domain="maths-info" tabindex="0">
-            <div class="domain-id">DOM-01</div>
-            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14l3 3 4-10h11"/><path d="M13 7l2 2"/></svg></div>
-            <h3>Mathématiques &amp; Informatique</h3>
-            <ul class="filiere-list">
-                <li data-filiere="SMI"><span class="f-code">SMI</span><span class="f-name">Sciences Mathématiques &amp; Informatique</span></li>
-                <li data-filiere="SMA"><span class="f-code">SMA</span><span class="f-name">Sciences Mathématiques Appliquées</span></li>
-                <li data-filiere="MIA"><span class="f-code">MIA</span><span class="f-name">Mathématiques, Informatique &amp; Applications</span></li>
-                <li data-filiere="GI"><span class="f-code">GI</span><span class="f-name">Génie Informatique</span></li>
-            </ul>
-        </article>
+        <a href="semestres.html?filiere=SVT" class="card">
+          SVT <br><small>Sciences de la Vie</small>
+        </a>
 
-        <article class="domain-card" data-domain="physique-chimie" tabindex="0">
-            <div class="domain-id">DOM-02</div>
-            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><path d="M10 2v7.5L4.5 19a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 15h7"/></svg></div>
-            <h3>Physique, Chimie &amp; Mécanique</h3>
-            <ul class="filiere-list">
-                <li data-filiere="SMP"><span class="f-code">SMP</span><span class="f-name">Sciences de la Matière Physique</span></li>
-                <li data-filiere="SMC"><span class="f-code">SMC</span><span class="f-name">Sciences de la Matière Chimie</span></li>
-                <li data-filiere="GEE"><span class="f-code">GEE</span><span class="f-name">Génie Électrique &amp; Électronique</span></li>
-                <li data-filiere="GMP"><span class="f-code">GMP</span><span class="f-name">Génie Mécanique &amp; Productique</span></li>
-                <li data-filiere="GEM"><span class="f-code">GEM</span><span class="f-name">Génie Énergétique &amp; Mécanique</span></li>
-            </ul>
-        </article>
+        <a href="semestres.html?filiere=SMC" class="card">
+          SMC <br><small>Sciences Mathématiques Chimie</small>
+        </a>
 
-        <article class="domain-card" data-domain="sv-terre" tabindex="0">
-            <div class="domain-id">DOM-03</div>
-            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3c0 6 12 12 12 18"/><path d="M18 3c0 6-12 12-12 18"/><line x1="7.5" y1="7" x2="16.5" y2="7"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7.5" y1="17" x2="16.5" y2="17"/></svg></div>
-            <h3>Sciences de la Vie &amp; de la Terre</h3>
-            <ul class="filiere-list">
-                <li data-filiere="SVI"><span class="f-code">SVI</span><span class="f-name">Sciences de la Vie</span></li>
-                <li data-filiere="STU"><span class="f-code">STU</span><span class="f-name">Sciences de la Terre &amp; de l'Univers</span></li>
-                <li data-filiere="BCG"><span class="f-code">BCG</span><span class="f-name">Biologie, Chimie &amp; Géologie</span></li>
-            </ul>
-        </article>
+        <a href="semestres.html?filiere=GI" class="card">
+          GI <br><small>Génie Informatique</small>
+        </a>
 
-        <article class="domain-card" data-domain="genie-tech" tabindex="0">
-            <div class="domain-id">DOM-04</div>
-            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M9 2v2.2M9 13.8V16M2 9h2.2M13.8 9H16M4 4l1.5 1.5M12.5 12.5L14 14M4 14l1.5-1.5M12.5 5.5L14 4"/><circle cx="17.5" cy="17.5" r="2.2"/><path d="M17.5 13.5v1.3M17.5 20.2v1.3M13.5 17.5h1.3M20.2 17.5h1.3"/></svg></div>
-            <h3>Génie &amp; Technologies</h3>
-            <ul class="filiere-list">
-                <li data-filiere="GI2"><span class="f-code">GI</span><span class="f-name">Génie Industriel</span></li>
-                <li data-filiere="GTR"><span class="f-code">GTR</span><span class="f-name">Génie des Télécoms &amp; Réseaux</span></li>
-                <li data-filiere="GC"><span class="f-code">GC</span><span class="f-name">Génie Civil</span></li>
-            </ul>
-        </article>
+        <a href="semestres.html?filiere=IA" class="card">
+          IA <br><small>Informatique & Applications</small>
+        </a>
 
-    </div>
-</section>
+      </div>
+    </section>
 
-<!-- CONTENU DYNAMIQUE -->
-<section class="container" id="filiere-section">
-    <div id="breadcrumb"></div>
-    <div id="content"></div>
-</section>
+  </main>
 
-<!-- BOUTON FLOTTANT AJOUT -->
-<button class="fab" id="fabAdd" title="Ajouter un document">
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
-</button>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>© 2026 Bibliothèque FSM - Tous droits réservés</p>
+  </footer>
 
-<!-- MODAL AJOUT DOCUMENT -->
-<div class="modal" id="addFileModal">
-<div class="modal-content">
-    <div class="modal-head">
-        <span class="modal-tag">// nouveau dépôt</span>
-        <h2>Ajouter un document</h2>
-        <button class="modal-close" id="modalClose" aria-label="Fermer">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
-        </button>
-    </div>
+  <!-- JS -->
+  <script src="script.js"></script>
 
-    <label class="field-label" for="fileFiliere">Filière</label>
-    <select id="fileFiliere"></select>
-
-    <label class="field-label" for="fileName">Nom du document</label>
-    <input type="text" id="fileName" placeholder="ex: Analyse 1 — Série de TD n°3">
-
-    <label class="field-label" for="fileType">Type</label>
-    <select id="fileType">
-        <option value="cours">Cours</option>
-        <option value="td">TD</option>
-        <option value="tp">TP</option>
-        <option value="exam">Examen</option>
-    </select>
-
-    <label class="field-label" for="fileLink">Lien (Google Drive, Telegram...)</label>
-    <input type="text" id="fileLink" placeholder="https://...">
-
-    <div class="buttons">
-        <button class="btn-secondary" id="cancelBtn">Annuler</button>
-        <button class="btn-primary" id="saveBtn">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg> Ajouter
-        </button>
-    </div>
-</div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<footer>
-    <p>ScienceHub Maroc — construit par et pour les étudiants des facultés des sciences.</p>
-</footer>
-
-<script src="script.js"></script>
 </body>
 </html>
