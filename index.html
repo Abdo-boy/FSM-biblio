@@ -6,28 +6,31 @@
   <title>Bibliothèque FSM</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/main.css">
 
-  <!-- Google Font (optionnel) -->
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header class="header">
-    <h1>📚 Bibliothèque FSM</h1>
-    <p>Faculté des Sciences - Maroc</p>
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>📚 Bibliothèque FSM</h1>
+      <p>Faculté des Sciences Maroc — Plateforme de ressources pédagogiques</p>
+    </div>
   </header>
 
   <!-- MAIN -->
   <main class="container">
 
+    <!-- INTRO -->
     <section class="intro">
       <h2>Bienvenue 👋</h2>
       <p>
-        Choisis ta filière pour accéder aux semestres, modules,
-        cours, TD et examens.
+        Accédez aux cours, TD, examens et résumés organisés par filière,
+        semestre et module.
       </p>
     </section>
 
@@ -37,28 +40,55 @@
 
       <div class="grid">
 
-        <a href="semestres.html?filiere=MIP" class="card">
-          MIP <br><small>Maths - Info - Physique</small>
+        <a href="pages/semestres.html?filiere=MIP" class="card">
+          <h3>MIP</h3>
+          <p>Mathématiques - Informatique - Physique</p>
         </a>
 
-        <a href="semestres.html?filiere=PC" class="card">
-          PC <br><small>Physique - Chimie</small>
+        <a href="pages/semestres.html?filiere=PC" class="card">
+          <h3>PC</h3>
+          <p>Physique - Chimie</p>
         </a>
 
-        <a href="semestres.html?filiere=SVT" class="card">
-          SVT <br><small>Sciences de la Vie</small>
+        <a href="pages/semestres.html?filiere=SVT" class="card">
+          <h3>SVT</h3>
+          <p>Sciences de la Vie et de la Terre</p>
         </a>
 
-        <a href="semestres.html?filiere=SMC" class="card">
-          SMC <br><small>Sciences Mathématiques Chimie</small>
+        <a href="pages/semestres.html?filiere=SMC" class="card">
+          <h3>SMC</h3>
+          <p>Sciences Mathématiques Chimie</p>
         </a>
 
-        <a href="semestres.html?filiere=GI" class="card">
-          GI <br><small>Génie Informatique</small>
+        <a href="pages/semestres.html?filiere=GI" class="card">
+          <h3>GI</h3>
+          <p>Génie Informatique</p>
         </a>
 
-        <a href="semestres.html?filiere=IA" class="card">
-          IA <br><small>Informatique & Applications</small>
+        <a href="pages/semestres.html?filiere=IA" class="card">
+          <h3>IA</h3>
+          <p>Informatique & Applications</p>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- QUICK ACCESS -->
+    <section class="quick">
+      <h2>⚡ Accès rapide</h2>
+
+      <div class="grid">
+
+        <a href="pages/semestres.html" class="card small">
+          📘 Semestres
+        </a>
+
+        <a href="pages/modules.html" class="card small">
+          📗 Modules
+        </a>
+
+        <a href="pages/ressources.html" class="card small">
+          📙 Ressources
         </a>
 
       </div>
@@ -68,11 +98,11 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>© 2026 Bibliothèque FSM - Tous droits réservés</p>
+    <p>© 2026 Bibliothèque FSM — Tous droits réservés</p>
   </footer>
 
   <!-- JS -->
-  <script src="script.js"></script>
+  <script src="assets/js/app.js"></script>
 
 </body>
 </html>
