@@ -1,171 +1,344 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScienceHub Maroc</title>
+/* =========================================================
+   ScienceHub Maroc — logique applicative
+   Persistance : localStorage (aucun backend)
+   ========================================================= */
 
-    <link rel="stylesheet" href="style.css">
+// ----- Référentiel des filières -----
+const FILIERES = {
+    SMI: { nom: "Sciences Mathématiques & Informatique", domaine: "Mathématiques & Informatique" },
+    SMA: { nom: "Sciences Mathématiques Appliquées", domaine: "Mathématiques & Informatique" },
+    MIA: { nom: "Mathématiques, Informatique & Applications", domaine: "Mathématiques & Informatique" },
+    GI:  { nom: "Génie Informatique", domaine: "Mathématiques & Informatique" },
+    SMP: { nom: "Sciences de la Matière Physique", domaine: "Physique, Chimie & Mécanique" },
+    SMC: { nom: "Sciences de la Matière Chimie", domaine: "Physique, Chimie & Mécanique" },
+    GEE: { nom: "Génie Électrique & Électronique", domaine: "Physique, Chimie & Mécanique" },
+    GMP: { nom: "Génie Mécanique & Productique", domaine: "Physique, Chimie & Mécanique" },
+    GEM: { nom: "Génie Énergétique & Mécanique", domaine: "Physique, Chimie & Mécanique" },
+    SVI: { nom: "Sciences de la Vie", domaine: "Sciences de la Vie & de la Terre" },
+    STU: { nom: "Sciences de la Terre & de l'Univers", domaine: "Sciences de la Vie & de la Terre" },
+    BCG: { nom: "Biologie, Chimie & Géologie", domaine: "Sciences de la Vie & de la Terre" },
+    GI2: { nom: "Génie Industriel", domaine: "Génie & Technologies" },
+    GTR: { nom: "Génie des Télécoms & Réseaux", domaine: "Génie & Technologies" },
+    GC:  { nom: "Génie Civil", domaine: "Génie & Technologies" },
+};
 
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-</head>
-<body>
+const TYPE_LABELS = { cours: "Cours", td: "TD", tp: "TP", exam: "Examen" };
+const STORAGE_KEY = "sciencehub_documents";
 
-<!-- ===== NAVBAR ===== -->
-<header>
-<nav>
-    <div class="logo">
-        <i class="fa-solid fa-atom"></i>
-        ScienceHub Maroc
-    </div>
+// ----- Données de démonstration (pour que le design ne soit pas vide au 1er chargement) -----
+const SEED_DOCS = [
+    { id: "seed1", filiere: "SMI", nom: "Analyse 1 — Suites et séries numériques", type: "cours", lien: "https://drive.google.com" },
+    { id: "seed2", filiere: "SMI", nom: "Algèbre 1 — Série de TD n°2", type: "td", lien: "https://drive.google.com" },
+    { id: "seed3", filiere: "SMI", nom: "Examen final — Algorithmique S2", type: "exam", lien: "https://drive.google.com" },
+    { id: "seed4", filiere: "SMP", nom: "Électromagnétisme — Cours complet", type: "cours", lien: "https://drive.google.com" },
+    { id: "seed5", filiere: "SMP", nom: "Mécanique du point — TD corrigé", type: "td", lien: "https://drive.google.com" },
+    { id: "seed6", filiere: "SVI", nom: "Biologie cellulaire — Support de cours", type: "cours", lien: "https://drive.google.com" },
+    { id: "seed7", filiere: "GC", nom: "Résistance des matériaux — TP n°1", type: "tp", lien: "https://drive.google.com" },
+];
 
-    <ul class="menu">
-        <li><a href="#">Accueil</a></li>
-        <li><a href="#">Filières</a></li>
-        <li><a href="#">Examens</a></li>
-        <li><a href="#">Contact</a></li>
-    </ul>
-</nav>
-</header>
+// ----- Lecture / écriture du stockage -----
+function loadDocs() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_DOCS));
+            return [...SEED_DOCS];
+        }
+        return JSON.parse(raw);
+    } catch (e) {
+        console.error("Erreur de lecture du stockage local :", e);
+        return [...SEED_DOCS];
+    }
+}
 
-<!-- HERO -->
-<section class="hero">
+function saveDocs(docs) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+        return true;
+    } catch (e) {
+        console.error("Erreur d'écriture du stockage local :", e);
+        return false;
+    }
+}
 
-<div class="hero-content">
+let documents = loadDocs();
+let currentFiliere = null;
+let currentFilter = "all";
 
-<h1>
-Plateforme des Facultés des Sciences du Maroc
-</h1>
+// ----- Éléments DOM -----
+const contentEl = document.getElementById("content");
+const breadcrumbEl = document.getElementById("breadcrumb");
+const modal = document.getElementById("addFileModal");
+const fabAdd = document.getElementById("fabAdd");
+const modalClose = document.getElementById("modalClose");
+const cancelBtn = document.getElementById("cancelBtn");
+const saveBtn = document.getElementById("saveBtn");
+const fileFiliereSelect = document.getElementById("fileFiliere");
+const toastEl = document.getElementById("toast");
+const navToggle = document.getElementById("navToggle");
+const menuEl = document.querySelector(".menu");
+const docCountStat = document.getElementById("docCountStat");
 
-<p>
-Cours, TD, Examens et ressources universitaires
-S1 → S6
-</p>
+// ----- Compteur animé pour les statistiques du hero -----
+function animateCount(el, target, duration = 900) {
+    const start = 0;
+    const startTime = performance.now();
+    function tick(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(start + (target - start) * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
 
-<div class="search-box">
+function initStats() {
+    document.querySelectorAll(".stat-value[data-count]").forEach(el => {
+        const target = el === docCountStat ? documents.length : parseInt(el.dataset.count, 10);
+        animateCount(el, target);
+    });
+}
 
-<input type="text"
-id="search"
-placeholder="Rechercher un module...">
+// ----- Remplissage du select de filière dans la modale -----
+function populateFiliereSelect() {
+    fileFiliereSelect.innerHTML = Object.entries(FILIERES)
+        .map(([code, info]) => `<option value="${code}">${code} — ${info.nom}</option>`)
+        .join("");
+}
 
-<button>
-<i class="fa-solid fa-magnifying-glass"></i>
-</button>
+// ----- Rendu d'une filière -----
+function renderFiliere(code) {
+    currentFiliere = code;
+    currentFilter = "all";
+    const info = FILIERES[code];
+    if (!info) return;
 
-</div>
+    breadcrumbEl.innerHTML = `
+        <a href="#domains">Filières</a>
+        <span class="sep">/</span>
+        <span>${info.domaine}</span>
+        <span class="sep">/</span>
+        <span class="current">${code}</span>
+    `;
 
-</div>
+    renderContent();
 
-</section>
+    document.getElementById("filiere-section").scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
-<!-- DOMAINES -->
-<section class="domains">
+function renderContent() {
+    if (!currentFiliere) return;
+    const info = FILIERES[currentFiliere];
+    const docsForFiliere = documents.filter(d => d.filiere === currentFiliere);
+    const filtered = currentFilter === "all"
+        ? docsForFiliere
+        : docsForFiliere.filter(d => d.type === currentFilter);
 
-<h2>Domaines</h2>
+    const tabs = ["all", "cours", "td", "tp", "exam"];
+    const tabLabels = { all: "Tout", cours: "Cours", td: "TD", tp: "TP", exam: "Examens" };
 
-<div class="domain-grid">
+    contentEl.innerHTML = `
+        <div class="filiere-header">
+            <h2>${currentFiliere} — ${info.nom}</h2>
+            <span class="doc-count">${docsForFiliere.length} document${docsForFiliere.length !== 1 ? "s" : ""} au total</span>
+        </div>
+        <div class="filter-tabs">
+            ${tabs.map(t => `
+                <button class="filter-tab ${t === currentFilter ? "active" : ""}" data-filter="${t}">
+                    ${tabLabels[t]}
+                </button>
+            `).join("")}
+        </div>
+        ${filtered.length === 0 ? `
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+                <p>// aucun document dans cette catégorie pour l'instant</p>
+            </div>
+        ` : `
+            <div class="doc-grid">
+                ${filtered.map(doc => `
+                    <div class="doc-card" data-id="${doc.id}">
+                        <div class="doc-card-top">
+                            <span class="doc-type-badge ${doc.type}">${TYPE_LABELS[doc.type]}</span>
+                            <button class="doc-delete" data-id="${doc.id}" title="Supprimer">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                            </button>
+                        </div>
+                        <span class="doc-name">${escapeHTML(doc.nom)}</span>
+                        <div class="doc-card-bottom">
+                            <a class="doc-link" href="${escapeAttr(doc.lien)}" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg> Ouvrir
+                            </a>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `}
+    `;
 
-<div class="domain-card">
-<h3>🧮 Mathématiques et Informatique</h3>
+    contentEl.querySelectorAll(".filter-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentFilter = btn.dataset.filter;
+            renderContent();
+        });
+    });
 
-<ul>
-<li>SMI</li>
-<li>SMA</li>
-<li>MIA</li>
-<li>GI</li>
-</ul>
+    contentEl.querySelectorAll(".doc-delete").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            deleteDoc(btn.dataset.id);
+        });
+    });
+}
 
-</div>
+// ----- Échappement basique pour éviter l'injection HTML -----
+function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
 
-<div class="domain-card">
-<h3>⚛ Physique, Chimie et Mécanique</h3>
+function escapeAttr(str) {
+    return String(str).replace(/"/g, "&quot;");
+}
 
-<ul>
-<li>SMP</li>
-<li>SMC</li>
-<li>GEE</li>
-<li>GMP</li>
-<li>GEM</li>
-</ul>
+// ----- Suppression d'un document -----
+function deleteDoc(id) {
+    documents = documents.filter(d => d.id !== id);
+    saveDocs(documents);
+    renderContent();
+    docCountStat.textContent = documents.length;
+    showToast("Document supprimé");
+}
 
-</div>
+// ----- Ajout d'un document -----
+function addDoc() {
+    const filiere = fileFiliereSelect.value;
+    const nom = document.getElementById("fileName").value.trim();
+    const type = document.getElementById("fileType").value;
+    const lien = document.getElementById("fileLink").value.trim();
 
-<div class="domain-card">
-<h3>🌿 Sciences de la Vie et de la Terre</h3>
+    if (!nom) {
+        showToast("Le nom du document est requis", true);
+        return;
+    }
+    if (!lien) {
+        showToast("Le lien est requis", true);
+        return;
+    }
 
-<ul>
-<li>SVI</li>
-<li>STU</li>
-<li>BCG</li>
-</ul>
+    const newDoc = {
+        id: "doc_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+        filiere,
+        nom,
+        type,
+        lien,
+    };
 
-</div>
+    documents.push(newDoc);
+    saveDocs(documents);
 
-<div class="domain-card">
-<h3>⚙ Génie et Technologies</h3>
+    closeModal();
+    showToast("Document ajouté avec succès");
 
-<ul>
-<li>GI</li>
-<li>GTR</li>
-<li>GC</li>
-</ul>
+    document.getElementById("fileName").value = "";
+    document.getElementById("fileLink").value = "";
 
-</div>
+    docCountStat.textContent = documents.length;
 
-</div>
+    // si on est déjà sur la filière concernée, on rafraîchit l'affichage
+    if (currentFiliere === filiere) {
+        renderContent();
+    } else {
+        renderFiliere(filiere);
+    }
+}
 
-</section>
+// ----- Toast -----
+let toastTimeout;
+function showToast(message, isError = false) {
+    clearTimeout(toastTimeout);
+    toastEl.textContent = message;
+    toastEl.style.borderColor = isError ? "var(--danger)" : "var(--accent-glow)";
+    toastEl.classList.add("show");
+    toastTimeout = setTimeout(() => toastEl.classList.remove("show"), 2600);
+}
 
-<!-- CONTENU DYNAMIQUE -->
-<section class="container">
+// ----- Modale -----
+function openModal(preselectFiliere) {
+    populateFiliereSelect();
+    if (preselectFiliere) fileFiliereSelect.value = preselectFiliere;
+    modal.classList.add("open");
+}
 
-<div id="breadcrumb"></div>
+function closeModal() {
+    modal.classList.remove("open");
+}
 
-<div id="content">
+fabAdd.addEventListener("click", () => openModal(currentFiliere));
+modalClose.addEventListener("click", closeModal);
+cancelBtn.addEventListener("click", closeModal);
+saveBtn.addEventListener("click", addDoc);
+modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
 
-</div>
+// ----- Clic sur une filière (carte domaine) -----
+document.querySelectorAll(".filiere-list li[data-filiere]").forEach(li => {
+    li.addEventListener("click", (e) => {
+        e.stopPropagation();
+        renderFiliere(li.dataset.filiere);
+    });
+});
 
-</section>
+// clic sur la carte domaine entière -> ouvre la première filière du domaine
+document.querySelectorAll(".domain-card").forEach(card => {
+    card.addEventListener("click", () => {
+        const firstFiliere = card.querySelector("[data-filiere]");
+        if (firstFiliere) renderFiliere(firstFiliere.dataset.filiere);
+    });
+    card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const firstFiliere = card.querySelector("[data-filiere]");
+            if (firstFiliere) renderFiliere(firstFiliere.dataset.filiere);
+        }
+    });
+});
 
-<!-- MODAL AJOUT DOCUMENT -->
-<div class="modal" id="addFileModal">
+// ----- Recherche -----
+const searchInput = document.getElementById("search");
+const searchBtn = document.getElementById("searchBtn");
 
-<div class="modal-content">
+function runSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query) return;
 
-<h2>Ajouter un document</h2>
+    // recherche par code de filière exact
+    const matchCode = Object.keys(FILIERES).find(code => code.toLowerCase() === query);
+    if (matchCode) {
+        renderFiliere(matchCode);
+        return;
+    }
 
-<input type="text"
-id="fileName"
-placeholder="Nom du document">
+    // recherche par nom de filière ou de domaine
+    const matchByName = Object.entries(FILIERES).find(([code, info]) =>
+        info.nom.toLowerCase().includes(query) || info.domaine.toLowerCase().includes(query)
+    );
+    if (matchByName) {
+        renderFiliere(matchByName[0]);
+        return;
+    }
 
-<select id="fileType">
-<option value="cours">Cours</option>
-<option value="td">TD</option>
-<option value="exam">Examen</option>
-</select>
+    showToast("Aucune filière trouvée pour « " + searchInput.value + " »", true);
+}
 
-<input type="text"
-id="fileLink"
-placeholder="Lien Google Drive ou Telegram">
+searchBtn.addEventListener("click", runSearch);
+searchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") runSearch(); });
 
-<div class="buttons">
+// ----- Menu mobile -----
+navToggle.addEventListener("click", () => {
+    menuEl.classList.toggle("mobile-open");
+});
 
-<button onclick="saveFile()">
-Ajouter
-</button>
-
-<button onclick="closeModal()">
-Annuler
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
-</html>
+// ----- Initialisation -----
+initStats();
