@@ -1,344 +1,201 @@
-/* =========================================================
-   ScienceHub Maroc — logique applicative
-   Persistance : localStorage (aucun backend)
-   ========================================================= */
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScienceHub Maroc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-// ----- Référentiel des filières -----
-const FILIERES = {
-    SMI: { nom: "Sciences Mathématiques & Informatique", domaine: "Mathématiques & Informatique" },
-    SMA: { nom: "Sciences Mathématiques Appliquées", domaine: "Mathématiques & Informatique" },
-    MIA: { nom: "Mathématiques, Informatique & Applications", domaine: "Mathématiques & Informatique" },
-    GI:  { nom: "Génie Informatique", domaine: "Mathématiques & Informatique" },
-    SMP: { nom: "Sciences de la Matière Physique", domaine: "Physique, Chimie & Mécanique" },
-    SMC: { nom: "Sciences de la Matière Chimie", domaine: "Physique, Chimie & Mécanique" },
-    GEE: { nom: "Génie Électrique & Électronique", domaine: "Physique, Chimie & Mécanique" },
-    GMP: { nom: "Génie Mécanique & Productique", domaine: "Physique, Chimie & Mécanique" },
-    GEM: { nom: "Génie Énergétique & Mécanique", domaine: "Physique, Chimie & Mécanique" },
-    SVI: { nom: "Sciences de la Vie", domaine: "Sciences de la Vie & de la Terre" },
-    STU: { nom: "Sciences de la Terre & de l'Univers", domaine: "Sciences de la Vie & de la Terre" },
-    BCG: { nom: "Biologie, Chimie & Géologie", domaine: "Sciences de la Vie & de la Terre" },
-    GI2: { nom: "Génie Industriel", domaine: "Génie & Technologies" },
-    GTR: { nom: "Génie des Télécoms & Réseaux", domaine: "Génie & Technologies" },
-    GC:  { nom: "Génie Civil", domaine: "Génie & Technologies" },
-};
+<!-- bruit de fond façon grille d'oscilloscope -->
+<div class="grid-overlay" aria-hidden="true"></div>
 
-const TYPE_LABELS = { cours: "Cours", td: "TD", tp: "TP", exam: "Examen" };
-const STORAGE_KEY = "sciencehub_documents";
+<!-- ===== NAVBAR ===== -->
+<header>
+<nav>
+    <div class="logo">
+        <span class="logo-mark">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(0 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <span class="logo-text">ScienceHub<span class="logo-accent">.ma</span></span>
+    </div>
+    <ul class="menu">
+        <li><a href="#" class="active">Accueil</a></li>
+        <li><a href="#domains">Filières</a></li>
+        <li><a href="#">Examens</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+</header>
 
-// ----- Données de démonstration (pour que le design ne soit pas vide au 1er chargement) -----
-const SEED_DOCS = [
-    { id: "seed1", filiere: "SMI", nom: "Analyse 1 — Suites et séries numériques", type: "cours", lien: "https://drive.google.com" },
-    { id: "seed2", filiere: "SMI", nom: "Algèbre 1 — Série de TD n°2", type: "td", lien: "https://drive.google.com" },
-    { id: "seed3", filiere: "SMI", nom: "Examen final — Algorithmique S2", type: "exam", lien: "https://drive.google.com" },
-    { id: "seed4", filiere: "SMP", nom: "Électromagnétisme — Cours complet", type: "cours", lien: "https://drive.google.com" },
-    { id: "seed5", filiere: "SMP", nom: "Mécanique du point — TD corrigé", type: "td", lien: "https://drive.google.com" },
-    { id: "seed6", filiere: "SVI", nom: "Biologie cellulaire — Support de cours", type: "cours", lien: "https://drive.google.com" },
-    { id: "seed7", filiere: "GC", nom: "Résistance des matériaux — TP n°1", type: "tp", lien: "https://drive.google.com" },
-];
+<!-- HERO -->
+<section class="hero">
+<div class="hero-content">
+    <div class="hero-eyebrow">
+        <span class="status-dot"></span>
+        <span>Réseau universitaire actif — S1 → S6</span>
+    </div>
+    <h1>
+        L'archive scientifique<br>des facultés du Maroc
+    </h1>
+    <p>
+        Cours, TD et examens classés par filière, déposés par les
+        étudiants, accessibles à tous.
+    </p>
 
-// ----- Lecture / écriture du stockage -----
-function loadDocs() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_DOCS));
-            return [...SEED_DOCS];
-        }
-        return JSON.parse(raw);
-    } catch (e) {
-        console.error("Erreur de lecture du stockage local :", e);
-        return [...SEED_DOCS];
-    }
-}
-
-function saveDocs(docs) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
-        return true;
-    } catch (e) {
-        console.error("Erreur d'écriture du stockage local :", e);
-        return false;
-    }
-}
-
-let documents = loadDocs();
-let currentFiliere = null;
-let currentFilter = "all";
-
-// ----- Éléments DOM -----
-const contentEl = document.getElementById("content");
-const breadcrumbEl = document.getElementById("breadcrumb");
-const modal = document.getElementById("addFileModal");
-const fabAdd = document.getElementById("fabAdd");
-const modalClose = document.getElementById("modalClose");
-const cancelBtn = document.getElementById("cancelBtn");
-const saveBtn = document.getElementById("saveBtn");
-const fileFiliereSelect = document.getElementById("fileFiliere");
-const toastEl = document.getElementById("toast");
-const navToggle = document.getElementById("navToggle");
-const menuEl = document.querySelector(".menu");
-const docCountStat = document.getElementById("docCountStat");
-
-// ----- Compteur animé pour les statistiques du hero -----
-function animateCount(el, target, duration = 900) {
-    const start = 0;
-    const startTime = performance.now();
-    function tick(now) {
-        const progress = Math.min((now - startTime) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = Math.round(start + (target - start) * eased);
-        if (progress < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-
-function initStats() {
-    document.querySelectorAll(".stat-value[data-count]").forEach(el => {
-        const target = el === docCountStat ? documents.length : parseInt(el.dataset.count, 10);
-        animateCount(el, target);
-    });
-}
-
-// ----- Remplissage du select de filière dans la modale -----
-function populateFiliereSelect() {
-    fileFiliereSelect.innerHTML = Object.entries(FILIERES)
-        .map(([code, info]) => `<option value="${code}">${code} — ${info.nom}</option>`)
-        .join("");
-}
-
-// ----- Rendu d'une filière -----
-function renderFiliere(code) {
-    currentFiliere = code;
-    currentFilter = "all";
-    const info = FILIERES[code];
-    if (!info) return;
-
-    breadcrumbEl.innerHTML = `
-        <a href="#domains">Filières</a>
-        <span class="sep">/</span>
-        <span>${info.domaine}</span>
-        <span class="sep">/</span>
-        <span class="current">${code}</span>
-    `;
-
-    renderContent();
-
-    document.getElementById("filiere-section").scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function renderContent() {
-    if (!currentFiliere) return;
-    const info = FILIERES[currentFiliere];
-    const docsForFiliere = documents.filter(d => d.filiere === currentFiliere);
-    const filtered = currentFilter === "all"
-        ? docsForFiliere
-        : docsForFiliere.filter(d => d.type === currentFilter);
-
-    const tabs = ["all", "cours", "td", "tp", "exam"];
-    const tabLabels = { all: "Tout", cours: "Cours", td: "TD", tp: "TP", exam: "Examens" };
-
-    contentEl.innerHTML = `
-        <div class="filiere-header">
-            <h2>${currentFiliere} — ${info.nom}</h2>
-            <span class="doc-count">${docsForFiliere.length} document${docsForFiliere.length !== 1 ? "s" : ""} au total</span>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+            <span class="terminal-path">recherche@sciencehub:~$</span>
         </div>
-        <div class="filter-tabs">
-            ${tabs.map(t => `
-                <button class="filter-tab ${t === currentFilter ? "active" : ""}" data-filter="${t}">
-                    ${tabLabels[t]}
-                </button>
-            `).join("")}
+        <div class="terminal-body">
+            <span class="prompt-caret">&gt;</span>
+            <input type="text" id="search" placeholder="rechercher un module, une filière..." autocomplete="off">
+            <button id="searchBtn" aria-label="Lancer la recherche">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+            </button>
         </div>
-        ${filtered.length === 0 ? `
-            <div class="empty-state">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
-                <p>// aucun document dans cette catégorie pour l'instant</p>
-            </div>
-        ` : `
-            <div class="doc-grid">
-                ${filtered.map(doc => `
-                    <div class="doc-card" data-id="${doc.id}">
-                        <div class="doc-card-top">
-                            <span class="doc-type-badge ${doc.type}">${TYPE_LABELS[doc.type]}</span>
-                            <button class="doc-delete" data-id="${doc.id}" title="Supprimer">
-                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
-                            </button>
-                        </div>
-                        <span class="doc-name">${escapeHTML(doc.nom)}</span>
-                        <div class="doc-card-bottom">
-                            <a class="doc-link" href="${escapeAttr(doc.lien)}" target="_blank" rel="noopener noreferrer">
-                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg> Ouvrir
-                            </a>
-                        </div>
-                    </div>
-                `).join("")}
-            </div>
-        `}
-    `;
+    </div>
 
-    contentEl.querySelectorAll(".filter-tab").forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentFilter = btn.dataset.filter;
-            renderContent();
-        });
-    });
+    <div class="hero-stats">
+        <div class="stat">
+            <span class="stat-value" data-count="12">0</span>
+            <span class="stat-label">filières</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value" data-count="4">0</span>
+            <span class="stat-label">domaines</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value" data-count="0" id="docCountStat">0</span>
+            <span class="stat-label">documents déposés</span>
+        </div>
+    </div>
+</div>
+</section>
 
-    contentEl.querySelectorAll(".doc-delete").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            deleteDoc(btn.dataset.id);
-        });
-    });
-}
+<!-- DOMAINES -->
+<section class="domains" id="domains">
+    <div class="section-head">
+        <span class="section-tag">// 04 domaines</span>
+        <h2>Choisir un domaine</h2>
+    </div>
 
-// ----- Échappement basique pour éviter l'injection HTML -----
-function escapeHTML(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
-}
+    <div class="domain-grid">
 
-function escapeAttr(str) {
-    return String(str).replace(/"/g, "&quot;");
-}
+        <article class="domain-card" data-domain="maths-info" tabindex="0">
+            <div class="domain-id">DOM-01</div>
+            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14l3 3 4-10h11"/><path d="M13 7l2 2"/></svg></div>
+            <h3>Mathématiques &amp; Informatique</h3>
+            <ul class="filiere-list">
+                <li data-filiere="SMI"><span class="f-code">SMI</span><span class="f-name">Sciences Mathématiques &amp; Informatique</span></li>
+                <li data-filiere="SMA"><span class="f-code">SMA</span><span class="f-name">Sciences Mathématiques Appliquées</span></li>
+                <li data-filiere="MIA"><span class="f-code">MIA</span><span class="f-name">Mathématiques, Informatique &amp; Applications</span></li>
+                <li data-filiere="GI"><span class="f-code">GI</span><span class="f-name">Génie Informatique</span></li>
+            </ul>
+        </article>
 
-// ----- Suppression d'un document -----
-function deleteDoc(id) {
-    documents = documents.filter(d => d.id !== id);
-    saveDocs(documents);
-    renderContent();
-    docCountStat.textContent = documents.length;
-    showToast("Document supprimé");
-}
+        <article class="domain-card" data-domain="physique-chimie" tabindex="0">
+            <div class="domain-id">DOM-02</div>
+            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><path d="M10 2v7.5L4.5 19a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 15h7"/></svg></div>
+            <h3>Physique, Chimie &amp; Mécanique</h3>
+            <ul class="filiere-list">
+                <li data-filiere="SMP"><span class="f-code">SMP</span><span class="f-name">Sciences de la Matière Physique</span></li>
+                <li data-filiere="SMC"><span class="f-code">SMC</span><span class="f-name">Sciences de la Matière Chimie</span></li>
+                <li data-filiere="GEE"><span class="f-code">GEE</span><span class="f-name">Génie Électrique &amp; Électronique</span></li>
+                <li data-filiere="GMP"><span class="f-code">GMP</span><span class="f-name">Génie Mécanique &amp; Productique</span></li>
+                <li data-filiere="GEM"><span class="f-code">GEM</span><span class="f-name">Génie Énergétique &amp; Mécanique</span></li>
+            </ul>
+        </article>
 
-// ----- Ajout d'un document -----
-function addDoc() {
-    const filiere = fileFiliereSelect.value;
-    const nom = document.getElementById("fileName").value.trim();
-    const type = document.getElementById("fileType").value;
-    const lien = document.getElementById("fileLink").value.trim();
+        <article class="domain-card" data-domain="sv-terre" tabindex="0">
+            <div class="domain-id">DOM-03</div>
+            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3c0 6 12 12 12 18"/><path d="M18 3c0 6-12 12-12 18"/><line x1="7.5" y1="7" x2="16.5" y2="7"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7.5" y1="17" x2="16.5" y2="17"/></svg></div>
+            <h3>Sciences de la Vie &amp; de la Terre</h3>
+            <ul class="filiere-list">
+                <li data-filiere="SVI"><span class="f-code">SVI</span><span class="f-name">Sciences de la Vie</span></li>
+                <li data-filiere="STU"><span class="f-code">STU</span><span class="f-name">Sciences de la Terre &amp; de l'Univers</span></li>
+                <li data-filiere="BCG"><span class="f-code">BCG</span><span class="f-name">Biologie, Chimie &amp; Géologie</span></li>
+            </ul>
+        </article>
 
-    if (!nom) {
-        showToast("Le nom du document est requis", true);
-        return;
-    }
-    if (!lien) {
-        showToast("Le lien est requis", true);
-        return;
-    }
+        <article class="domain-card" data-domain="genie-tech" tabindex="0">
+            <div class="domain-id">DOM-04</div>
+            <div class="domain-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M9 2v2.2M9 13.8V16M2 9h2.2M13.8 9H16M4 4l1.5 1.5M12.5 12.5L14 14M4 14l1.5-1.5M12.5 5.5L14 4"/><circle cx="17.5" cy="17.5" r="2.2"/><path d="M17.5 13.5v1.3M17.5 20.2v1.3M13.5 17.5h1.3M20.2 17.5h1.3"/></svg></div>
+            <h3>Génie &amp; Technologies</h3>
+            <ul class="filiere-list">
+                <li data-filiere="GI2"><span class="f-code">GI</span><span class="f-name">Génie Industriel</span></li>
+                <li data-filiere="GTR"><span class="f-code">GTR</span><span class="f-name">Génie des Télécoms &amp; Réseaux</span></li>
+                <li data-filiere="GC"><span class="f-code">GC</span><span class="f-name">Génie Civil</span></li>
+            </ul>
+        </article>
 
-    const newDoc = {
-        id: "doc_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-        filiere,
-        nom,
-        type,
-        lien,
-    };
+    </div>
+</section>
 
-    documents.push(newDoc);
-    saveDocs(documents);
+<!-- CONTENU DYNAMIQUE -->
+<section class="container" id="filiere-section">
+    <div id="breadcrumb"></div>
+    <div id="content"></div>
+</section>
 
-    closeModal();
-    showToast("Document ajouté avec succès");
+<!-- BOUTON FLOTTANT AJOUT -->
+<button class="fab" id="fabAdd" title="Ajouter un document">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+</button>
 
-    document.getElementById("fileName").value = "";
-    document.getElementById("fileLink").value = "";
+<!-- MODAL AJOUT DOCUMENT -->
+<div class="modal" id="addFileModal">
+<div class="modal-content">
+    <div class="modal-head">
+        <span class="modal-tag">// nouveau dépôt</span>
+        <h2>Ajouter un document</h2>
+        <button class="modal-close" id="modalClose" aria-label="Fermer">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+        </button>
+    </div>
 
-    docCountStat.textContent = documents.length;
+    <label class="field-label" for="fileFiliere">Filière</label>
+    <select id="fileFiliere"></select>
 
-    // si on est déjà sur la filière concernée, on rafraîchit l'affichage
-    if (currentFiliere === filiere) {
-        renderContent();
-    } else {
-        renderFiliere(filiere);
-    }
-}
+    <label class="field-label" for="fileName">Nom du document</label>
+    <input type="text" id="fileName" placeholder="ex: Analyse 1 — Série de TD n°3">
 
-// ----- Toast -----
-let toastTimeout;
-function showToast(message, isError = false) {
-    clearTimeout(toastTimeout);
-    toastEl.textContent = message;
-    toastEl.style.borderColor = isError ? "var(--danger)" : "var(--accent-glow)";
-    toastEl.classList.add("show");
-    toastTimeout = setTimeout(() => toastEl.classList.remove("show"), 2600);
-}
+    <label class="field-label" for="fileType">Type</label>
+    <select id="fileType">
+        <option value="cours">Cours</option>
+        <option value="td">TD</option>
+        <option value="tp">TP</option>
+        <option value="exam">Examen</option>
+    </select>
 
-// ----- Modale -----
-function openModal(preselectFiliere) {
-    populateFiliereSelect();
-    if (preselectFiliere) fileFiliereSelect.value = preselectFiliere;
-    modal.classList.add("open");
-}
+    <label class="field-label" for="fileLink">Lien (Google Drive, Telegram...)</label>
+    <input type="text" id="fileLink" placeholder="https://...">
 
-function closeModal() {
-    modal.classList.remove("open");
-}
+    <div class="buttons">
+        <button class="btn-secondary" id="cancelBtn">Annuler</button>
+        <button class="btn-primary" id="saveBtn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg> Ajouter
+        </button>
+    </div>
+</div>
+</div>
 
-fabAdd.addEventListener("click", () => openModal(currentFiliere));
-modalClose.addEventListener("click", closeModal);
-cancelBtn.addEventListener("click", closeModal);
-saveBtn.addEventListener("click", addDoc);
-modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+<div class="toast" id="toast"></div>
 
-// ----- Clic sur une filière (carte domaine) -----
-document.querySelectorAll(".filiere-list li[data-filiere]").forEach(li => {
-    li.addEventListener("click", (e) => {
-        e.stopPropagation();
-        renderFiliere(li.dataset.filiere);
-    });
-});
+<footer>
+    <p>ScienceHub Maroc — construit par et pour les étudiants des facultés des sciences.</p>
+</footer>
 
-// clic sur la carte domaine entière -> ouvre la première filière du domaine
-document.querySelectorAll(".domain-card").forEach(card => {
-    card.addEventListener("click", () => {
-        const firstFiliere = card.querySelector("[data-filiere]");
-        if (firstFiliere) renderFiliere(firstFiliere.dataset.filiere);
-    });
-    card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            const firstFiliere = card.querySelector("[data-filiere]");
-            if (firstFiliere) renderFiliere(firstFiliere.dataset.filiere);
-        }
-    });
-});
-
-// ----- Recherche -----
-const searchInput = document.getElementById("search");
-const searchBtn = document.getElementById("searchBtn");
-
-function runSearch() {
-    const query = searchInput.value.trim().toLowerCase();
-    if (!query) return;
-
-    // recherche par code de filière exact
-    const matchCode = Object.keys(FILIERES).find(code => code.toLowerCase() === query);
-    if (matchCode) {
-        renderFiliere(matchCode);
-        return;
-    }
-
-    // recherche par nom de filière ou de domaine
-    const matchByName = Object.entries(FILIERES).find(([code, info]) =>
-        info.nom.toLowerCase().includes(query) || info.domaine.toLowerCase().includes(query)
-    );
-    if (matchByName) {
-        renderFiliere(matchByName[0]);
-        return;
-    }
-
-    showToast("Aucune filière trouvée pour « " + searchInput.value + " »", true);
-}
-
-searchBtn.addEventListener("click", runSearch);
-searchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") runSearch(); });
-
-// ----- Menu mobile -----
-navToggle.addEventListener("click", () => {
-    menuEl.classList.toggle("mobile-open");
-});
-
-// ----- Initialisation -----
-initStats();
+<script src="script.js"></script>
+</body>
+</html>
