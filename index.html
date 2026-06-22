@@ -3,124 +3,356 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bibliothèque FSM — Faculté des Sciences Maroc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,680;1,9..144,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16302B;
+    --ink-soft:#274A42;
+    --gold:#B98A3D;
+    --gold-bright:#D6A94F;
+    --brick:#9C3B26;
+    --paper:#ECE6D7;
+    --paper-dark:#E1DAC6;
+    --card:#F6F2E7;
+    --text:#1C1C1A;
+    --text-soft:#5A584E;
+    --line: rgba(22,48,43,0.18);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--text);
+    font-family:'Public Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit; text-decoration:none;}
+  .mono{font-family:'IBM Plex Mono', monospace; letter-spacing:0.02em;}
 
-<title>Universal Site</title>
+  /* texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(22,48,43,0.07) 1px, transparent 0);
+    background-size: 22px 22px;
+    pointer-events:none;
+    z-index:0;
+  }
 
-<link rel="stylesheet" href="style.css">
+  header{
+    position:relative; z-index:2;
+    padding:28px 6vw 0;
+  }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-bottom:18px; border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .stamp{
+    width:42px; height:42px; border:2px solid var(--ink);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:680; font-size:15px; color:var(--ink);
+    transform:rotate(-6deg);
+  }
+  .brand-text .eyebrow{
+    font-size:11px; text-transform:uppercase; letter-spacing:0.16em; color:var(--text-soft);
+  }
+  .brand-text .title{
+    font-family:'Fraunces', serif; font-weight:680; font-size:20px; color:var(--ink);
+  }
+  nav{display:flex; gap:28px; font-size:14px; font-weight:500;}
+  nav a{padding:6px 0; border-bottom:1px solid transparent; transition:border-color .2s;}
+  nav a:hover{border-color:var(--gold);}
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  /* HERO */
+  .hero{
+    position:relative; z-index:2;
+    padding:90px 6vw 70px;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:60px; align-items:end;
+  }
+  .hero .eyebrow{
+    font-size:12px; text-transform:uppercase; letter-spacing:0.22em; color:var(--brick); font-weight:600;
+    margin-bottom:18px; display:block;
+  }
+  .hero h1{
+    font-family:'Fraunces', serif; font-weight:560; font-style:italic;
+    font-size:clamp(40px, 5.4vw, 74px); line-height:1.02; margin:0 0 22px; color:var(--ink);
+  }
+  .hero h1 em{font-style:normal; font-weight:680; color:var(--brick);}
+  .hero p{font-size:17px; line-height:1.6; color:var(--text-soft); max-width:46ch; margin:0 0 28px;}
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    padding:13px 24px; font-size:14px; font-weight:600; border-radius:2px;
+    display:inline-flex; align-items:center; gap:8px; transition:transform .18s, box-shadow .18s;
+  }
+  .btn-primary{background:var(--ink); color:var(--card);}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(22,48,43,.25);}
+  .btn-ghost{border:1px solid var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink); transform:translateY(-2px);}
 
+  /* card catalog drawer visual */
+  .drawer{
+    position:relative;
+    background:var(--ink);
+    border-radius:4px;
+    padding:22px;
+    box-shadow:0 18px 40px rgba(22,48,43,.28);
+  }
+  .drawer-label{
+    color:var(--paper); font-family:'IBM Plex Mono', monospace; font-size:11px;
+    letter-spacing:0.12em; text-transform:uppercase; opacity:.7; margin-bottom:14px;
+  }
+  .drawer-card{
+    background:var(--card); border-radius:2px; padding:16px 16px 14px;
+    margin-bottom:10px; border-left:4px solid var(--gold);
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--text);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .drawer-card:last-child{margin-bottom:0;}
+  .drawer-card span.tag{color:var(--brick); font-weight:600;}
+
+  /* SECTION: filieres */
+  section{position:relative; z-index:2; padding:30px 6vw 90px;}
+  .section-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:34px; flex-wrap:wrap; gap:10px;}
+  .section-head .num{font-family:'IBM Plex Mono', monospace; color:var(--brick); font-size:13px; margin-right:10px;}
+  .section-head h2{
+    font-family:'Fraunces', serif; font-weight:680; font-size:30px; color:var(--ink); margin:0; display:inline;
+  }
+  .section-head .desc{color:var(--text-soft); font-size:14px; max-width:36ch;}
+
+  .catalog-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;
+  }
+  .catalog-card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:26px 22px 22px;
+    overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s;
+  }
+  .catalog-card::before{
+    /* perforation strip */
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:26px;
+    background-image: radial-gradient(circle, var(--paper) 3px, transparent 3.2px);
+    background-size: 26px 16px;
+    background-position: center;
+    border-right:1px dashed var(--line);
+  }
+  .catalog-card{padding-left:48px;}
+  .catalog-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 16px 30px rgba(22,48,43,.16);
+    border-color:var(--gold);
+  }
+  .catalog-card .accession{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-soft);
+    letter-spacing:0.08em; margin-bottom:10px; display:block;
+  }
+  .catalog-card .icon{font-size:26px; margin-bottom:10px; display:block;}
+  .catalog-card h3{
+    font-family:'Fraunces', serif; font-weight:680; font-size:21px; margin:0 0 6px; color:var(--ink);
+  }
+  .catalog-card p.sub{font-size:13.5px; color:var(--text-soft); margin:0 0 18px;}
+  .catalog-card .go{
+    font-size:13px; font-weight:600; color:var(--brick);
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .catalog-card .go .arrow{transition:transform .2s;}
+  .catalog-card:hover .go .arrow{transform:translateX(4px);}
+
+  /* quick access */
+  .quick-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  .quick-card{
+    background:var(--paper-dark); border:1px solid var(--line); border-radius:3px;
+    padding:24px; display:flex; flex-direction:column; gap:10px;
+    transition:background .2s, border-color .2s;
+  }
+  .quick-card:hover{background:var(--card); border-color:var(--gold);}
+  .quick-card .label{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--brick); text-transform:uppercase; letter-spacing:.1em;}
+  .quick-card h4{font-family:'Fraunces', serif; font-size:18px; margin:0; color:var(--ink); font-weight:680;}
+  .quick-card p{font-size:13px; color:var(--text-soft); margin:0;}
+
+  /* structure / sitemap as ledger */
+  .ledger{
+    background:var(--ink); color:var(--paper); border-radius:4px; padding:36px 38px;
+    font-family:'IBM Plex Mono', monospace; font-size:13.5px; line-height:2;
+  }
+  .ledger .row{display:flex; gap:14px; border-bottom:1px solid rgba(236,230,215,0.12); padding:4px 0;}
+  .ledger .row:last-child{border-bottom:none;}
+  .ledger .indent1{padding-left:22px; color:var(--gold-bright);}
+  .ledger .indent2{padding-left:44px; color:#cfd8c9;}
+  .ledger .path{opacity:.55; margin-left:auto;}
+
+  footer{
+    position:relative; z-index:2;
+    border-top:1px solid var(--line); padding:30px 6vw 40px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    color:var(--text-soft); font-size:13px;
+  }
+
+  @media (max-width:880px){
+    .hero{grid-template-columns:1fr; gap:40px;}
+    .catalog-grid, .quick-grid{grid-template-columns:1fr;}
+    nav{display:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+
+  a:focus-visible, .btn:focus-visible{outline:2px solid var(--brick); outline-offset:3px;}
+</style>
 </head>
 <body>
 
 <header>
-
-<nav>
-
-<div class="logo">
-<i class="fa-solid fa-graduation-cap"></i>
-UniversalSite
-</div>
-
-<ul>
-<li><a href="#">Accueil</a></li>
-<li><a href="#">Cours</a></li>
-<li><a href="#">TD</a></li>
-<li><a href="#">Examens</a></li>
-<li><a href="#">Contact</a></li>
-</ul>
-
-<button id="dark-btn">
-<i class="fa-solid fa-moon"></i>
-</button>
-
-</nav>
-
-<div class="hero">
-
-<h1>Plateforme Universelle</h1>
-
-<p>
-Cours, Exercices, Examens et Ressources.
-</p>
-
-<input type="text"
-id="search"
-placeholder="Recherche..."
-onkeyup="searchCard()">
-
-</div>
-
+  <div class="topbar">
+    <div class="brand">
+      <div class="stamp">FSM</div>
+      <div class="brand-text">
+        <div class="eyebrow">Faculté des Sciences Maroc</div>
+        <div class="title">Bibliothèque numérique</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#filieres">Filières</a>
+      <a href="#acces">Accès rapide</a>
+      <a href="#structure">Structure</a>
+    </nav>
+  </div>
 </header>
 
-<section class="stats">
-
-<div class="box">
-<h2>1500+</h2>
-<p>Cours</p>
-</div>
-
-<div class="box">
-<h2>700+</h2>
-<p>TD</p>
-</div>
-
-<div class="box">
-<h2>450+</h2>
-<p>Examens</p>
-</div>
-
-<div class="box">
-<h2>30+</h2>
-<p>Filières</p>
-</div>
-
+<section class="hero">
+  <div>
+    <span class="eyebrow">Catalogue — Cours · TD · Examens · Résumés</span>
+    <h1>Toutes les ressources<br>de votre <em>filière</em>,<br>classées comme en rayon.</h1>
+    <p>Une bibliothèque pédagogique organisée par filière, semestre et module — pour retrouver un cours, un TD ou un sujet d'examen aussi vite qu'une fiche de catalogue.</p>
+    <div class="hero-actions">
+      <a href="#filieres" class="btn btn-primary">Parcourir les filières →</a>
+      <a href="pages/ressources.html" class="btn btn-ghost">Voir toutes les ressources</a>
+    </div>
+  </div>
+  <div class="drawer">
+    <div class="drawer-label">Tiroir — Filières actives</div>
+    <div class="drawer-card"><span>Mathématiques · Info · Physique</span><span class="tag">MIP</span></div>
+    <div class="drawer-card"><span>Génie Informatique</span><span class="tag">GI</span></div>
+    <div class="drawer-card"><span>Sciences de la Vie et de la Terre</span><span class="tag">SVT</span></div>
+    <div class="drawer-card"><span>Informatique &amp; Applications</span><span class="tag">IA</span></div>
+  </div>
 </section>
 
-<section class="cards">
+<section id="filieres">
+  <div class="section-head">
+    <div><span class="num">01</span><h2>Choisir une filière</h2></div>
+    <div class="desc">Chaque fiche ouvre la liste des semestres correspondants.</div>
+  </div>
+  <div class="catalog-grid">
 
-<div class="card">
-<h3>Mathématiques</h3>
-<p>Cours et Exercices.</p>
-</div>
+    <a class="catalog-card" href="pages/semestres.html?filiere=MIP">
+      <span class="accession">FIL — MIP</span>
+      <span class="icon">🧮</span>
+      <h3>MIP</h3>
+      <p class="sub">Mathématiques · Informatique · Physique</p>
+      <span class="go">Voir les semestres <span class="arrow">→</span></span>
+    </a>
 
-<div class="card">
-<h3>Physique</h3>
-<p>Mécanique, Thermodynamique.</p>
-</div>
+    <a class="catalog-card" href="pages/semestres.html?filiere=PC">
+      <span class="accession">FIL — PC</span>
+      <span class="icon">⚛️</span>
+      <h3>PC</h3>
+      <p class="sub">Physique · Chimie</p>
+      <span class="go">Voir les semestres <span class="arrow">→</span></span>
+    </a>
 
-<div class="card">
-<h3>Informatique</h3>
-<p>Python, C, JavaScript.</p>
-</div>
+    <a class="catalog-card" href="pages/semestres.html?filiere=SVT">
+      <span class="accession">FIL — SVT</span>
+      <span class="icon">🌱</span>
+      <h3>SVT</h3>
+      <p class="sub">Sciences de la Vie et de la Terre</p>
+      <span class="go">Voir les semestres <span class="arrow">→</span></span>
+    </a>
 
-<div class="card">
-<h3>Chimie</h3>
-<p>Chimie organique et minérale.</p>
-</div>
+    <a class="catalog-card" href="pages/semestres.html?filiere=SMC">
+      <span class="accession">FIL — SMC</span>
+      <span class="icon">➗</span>
+      <h3>SMC</h3>
+      <p class="sub">Sciences Mathématiques · Chimie</p>
+      <span class="go">Voir les semestres <span class="arrow">→</span></span>
+    </a>
 
-<div class="card">
-<h3>Biologie</h3>
-<p>Cellule et Génétique.</p>
-</div>
+    <a class="catalog-card" href="pages/semestres.html?filiere=GI">
+      <span class="accession">FIL — GI</span>
+      <span class="icon">💻</span>
+      <h3>GI</h3>
+      <p class="sub">Génie Informatique</p>
+      <span class="go">Voir les semestres <span class="arrow">→</span></span>
+    </a>
 
-<div class="card">
-<h3>Électronique</h3>
-<p>Circuits et Systèmes.</p>
-</div>
+    <a class="catalog-card" href="pages/semestres.html?filiere=IA">
+      <span class="accession">FIL — IA</span>
+      <span class="icon">🤖</span>
+      <h3>IA</h3>
+      <p class="sub">Informatique &amp; Applications</p>
+      <span class="go">Voir les semestres <span class="arrow">→</span></span>
+    </a>
 
+  </div>
+</section>
+
+<section id="acces">
+  <div class="section-head">
+    <div><span class="num">02</span><h2>Accès rapide</h2></div>
+    <div class="desc">Pour ceux qui savent déjà ce qu'ils cherchent.</div>
+  </div>
+  <div class="quick-grid">
+    <a class="quick-card" href="pages/semestres.html">
+      <span class="label">Étape 1</span>
+      <h4>📘 Semestres</h4>
+      <p>Parcourir S1 à S6 toutes filières confondues.</p>
+    </a>
+    <a class="quick-card" href="pages/modules.html">
+      <span class="label">Étape 2</span>
+      <h4>📗 Modules</h4>
+      <p>Retrouver un module précis dans son semestre.</p>
+    </a>
+    <a class="quick-card" href="pages/ressources.html">
+      <span class="label">Étape 3</span>
+      <h4>📙 Ressources</h4>
+      <p>Cours, TD, examens et résumés, prêts à consulter.</p>
+    </a>
+  </div>
+</section>
+
+<section id="structure">
+  <div class="section-head">
+    <div><span class="num">03</span><h2>Structure du site</h2></div>
+    <div class="desc">Pour les contributeurs et l'équipe technique.</div>
+  </div>
+  <div class="ledger">
+    <div class="row"><span>index.html</span><span class="path">/ — accueil</span></div>
+    <div class="row indent1"><span>/pages/</span></div>
+    <div class="row indent2"><span>semestres.html</span></div>
+    <div class="row indent2"><span>modules.html</span></div>
+    <div class="row indent2"><span>ressources.html</span></div>
+    <div class="row indent1"><span>/assets/</span></div>
+    <div class="row indent2"><span>css/</span></div>
+    <div class="row indent2"><span>js/</span></div>
+    <div class="row indent2"><span>img/</span></div>
+  </div>
 </section>
 
 <footer>
-
-<p>
-© 2026 UniversalSite
-</p>
-
+  <span>© 2026 Bibliothèque FSM — Faculté des Sciences Maroc</span>
+  <span>Cours · TD · Examens · Résumés</span>
 </footer>
-
-<script src="script.js"></script>
 
 </body>
 </html>
